@@ -21,7 +21,7 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "https://github.com/NishaAnas/connectSphere.git"
+    "url": "https://github.com/Nisha-Mashhood/ConnectSphereBackend.git"
   },
   "description": "Backend for Connect Sphere platform, supporting user authentication, collaboration management, and mentor features.",
   "dependencies": {

@@ -1,0 +1,15 @@
+# Ignore node_modules folder
+node_modules/
+
+# Ignore environment variables file
+.env*
+
+
+# dist folder which contains transpled files
+backend/dist/
+
+#uploads folder for local storage of images
+backend/uploads/
+
+#log File
+logs/

@@ -40,7 +40,7 @@ const startServer = async () => {
   app.use(express.json());
   app.use(cookieParser());
   app.use(cors({
-    origin: config.frontendurl || "http://localhost:5173",
+    origin: config.frontendurl || "http://localhost:8089",
     credentials: true,
   }));
 
@@ -75,7 +75,7 @@ const startServer = async () => {
   // Initialize Socket.IO
   const io = new Server(server, {
     cors: {
-      origin: config.frontendurl || "http://localhost:5173",
+      origin: config.frontendurl || "http://localhost:8089",
       methods: ["GET", "POST"],
       credentials: true,
     },

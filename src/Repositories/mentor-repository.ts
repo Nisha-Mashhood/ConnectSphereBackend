@@ -344,6 +344,16 @@ export class MentorRepository extends BaseRepository<IMentor> implements IMentor
     }
   }
 
+  //Code Test
+  public getMentorByChar = async(char: string): Promise<IMentor |null> =>{
+    try{
+      const mentors = await this.model.find({name:{regex: char, options: "i"}});
+      return mentors;
+    }catch(err){
+
+    }
+  }
+
   public getMentorDetails = async (id: string): Promise<IMentor | null> => {
     try {
       logger.debug(`Fetching mentor details for ID: ${id}`);

@@ -28,13 +28,17 @@ import callLogRoutes from "./Routes/Routes/call-routes";
 import { errorHandler } from "./middlewares/error-handler-middleware";
 import container from "./container";
 import { ISocketService } from "./Interfaces/Services/i-socket-service";
-
+const PORT = Number(config.port) || 3000;
 const app = express();
 const server: http.Server = http.createServer(app);
 
 // Connect to DB and run cleanup
 const startServer = async () => {
-  await connectDB(); 
+  if (!config.mongoURI) {
+    logger.warn("MongoDB URI not found. Skipping DB connection.");
+  } else {
+    await connectDB();
+  } 
 
   // Middleware
   app.use(express.json());
@@ -88,8 +92,8 @@ const startServer = async () => {
   cleanupScheduler.start();
 
   // Start server
-  server.listen(config.port, () => {
-    logger.info(`Server is running on http://localhost:${config.port}`);
+  server.listen(PORT, '0.0.0.0', () => {
+    logger.info(`Server running on port ${PORT}`);
   });
 };
 

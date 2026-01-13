@@ -37,7 +37,6 @@ export class MentorController extends BaseController implements IMentorControlle
       const { mentorId } = req.params;
       const mentor = await this._mentorService.getMentorByMentorId(mentorId);
       if (!mentor) {
-        // throw new HttpError(ERROR_MESSAGES.MENTOR_NOT_FOUND, StatusCodes.NOT_FOUND);
         this.sendSuccess(res,  mentor, MENTOR_MESSAGES.NO_MENTOR_FOUND);
         return;
       }

@@ -1,6 +1,6 @@
 import { IUserDTO } from '../../Interfaces/DTOs/i-user-dto';
 import { IUser } from '../../Interfaces/Models/i-user';
-import type { Express } from "express";
+import { Request } from "express";
 
 //Types for controller file 
 
@@ -58,8 +58,8 @@ export interface VerifyPasskeyRequestBody {
 
 // Interface for update profile request body
 export interface UpdateProfileRequestBody extends Partial<IUser> {
-  profilePicFile?: Express.Multer.File;
-  coverPicFile?: Express.Multer.File;
+  profilePicFile?: Request["file"];
+  coverPicFile?: Request["file"];
 }
 
 
@@ -74,8 +74,8 @@ export interface SignupData {
 
 // Interface for profile update data
 export interface ProfileUpdateData extends Partial<IUser> {
-  profilePicFile?: Express.Multer.File;
-  coverPicFile?: Express.Multer.File;
+  profilePicFile?: Request["file"];
+  coverPicFile?: Request["file"];
 }
 
 //Interface for Query for User Retrievel

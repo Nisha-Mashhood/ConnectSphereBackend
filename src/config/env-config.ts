@@ -35,6 +35,8 @@ const config = {
   vapidEmail: process.env.VAPID_EMAIL,
   redisclienturl: process.env.REDIS_URL,
   logLevel: process.env.LOG_LEVEL,
+  logToken: process.env.BETTERSTACK_LOG_TOKEN,
+  logEndPoint: process.env.BETTERSTACK_LOG_ENDPOINT,
 };
 
 export default config;

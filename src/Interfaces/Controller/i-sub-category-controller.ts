@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import { ISubcategory } from "../Models/i-sub-category";
-import type { Express, NextFunction } from "express";
+import type { NextFunction } from "express";
 
 export interface SubcategoryRequest extends Request {
   body: Partial<ISubcategory>;
   params: { id?: string; categoryId?: string };
-  file?: Express.Multer.File;
+  file?: Request["file"];
 }
 
 export interface ISubcategoryController {

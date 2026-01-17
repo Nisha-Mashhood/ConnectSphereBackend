@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { ITask } from "../Models/i-task";
-import type { Express, NextFunction } from "express";
+import type { NextFunction } from "express";
 
 export interface TaskRequest extends Request {
   body: Partial<ITask> & { taskData?: string; priority?: string; status?: string };
@@ -11,7 +11,7 @@ export interface TaskRequest extends Request {
     contextType?: string;
     userId?: string;
   };
-  file?: Express.Multer.File;
+  file?: Request["file"];
 }
 
 export interface ITaskController {

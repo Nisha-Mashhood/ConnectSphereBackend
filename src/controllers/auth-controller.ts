@@ -1,7 +1,6 @@
 import { BaseController } from '../core/controller/base-controller';
 import { inject, injectable } from 'inversify';
 import { Request, Response, NextFunction } from 'express';
-import type { Express } from "express";
 import logger from '../core/utils/logger';
 import { ForgotPasswordRequestBody, 
   LoginRequestBody, 
@@ -216,8 +215,8 @@ export class AuthController extends BaseController implements IAuthController{
         throw new HttpError(ERROR_MESSAGES.REQUIRED_USER_ID, StatusCodes.BAD_REQUEST);
       }
       const data: UpdateProfileRequestBody = req.body;
-      const profilePicFile = (req.files as { [fieldname: string]: Express.Multer.File[] })?.["profilePic"]?.[0];
-      const coverPicFile = (req.files as { [fieldname: string]: Express.Multer.File[] })?.["coverPic"]?.[0];
+      const profilePicFile = req.files ?.["profilePic"]?.[0];
+      const coverPicFile = req.files ?.["coverPic"]?.[0];
       if (profilePicFile) data.profilePicFile = profilePicFile;
       if (coverPicFile) data.coverPicFile = coverPicFile;
       const updatedUser = await this._authService.updateUserProfile(userId, data);

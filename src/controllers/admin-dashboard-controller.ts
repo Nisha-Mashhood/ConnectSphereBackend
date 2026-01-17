@@ -9,7 +9,6 @@ import { ERROR_MESSAGES } from "../constants/error-messages";
 import { StatusCodes } from "../enums/status-code-enums";
 import { HttpError } from "../core/utils/error-handler";
 import { UpdateProfileRequestBody } from "../Utils/types/auth-types";
-import type { Express } from "express";
 
 @injectable()
 export class AdminController extends BaseController implements IAdminController {
@@ -161,7 +160,7 @@ export class AdminController extends BaseController implements IAdminController 
           throw new HttpError(ERROR_MESSAGES.REQUIRED_USER_ID, StatusCodes.BAD_REQUEST);
         }
         const data: UpdateProfileRequestBody = req.body;
-        const profilePicFile = (req.files as { [fieldname: string]: Express.Multer.File[] })?.["profilePic"]?.[0];
+        const profilePicFile = req.files?.["profilePic"]?.[0];
         if (profilePicFile) data.profilePicFile = profilePicFile;
         const updatedUser = await this._adminService.updateAdminProfile(userId, data);
         this.sendSuccess(res, { user: updatedUser }, AUTH_MESSAGES.PROFILE_UPDATED);

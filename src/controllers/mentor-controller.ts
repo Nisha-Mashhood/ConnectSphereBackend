@@ -1,4 +1,4 @@
-import type { Request, Response, Express, NextFunction } from "express";
+import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
 import { BaseController } from "../core/controller/base-controller";
 import { uploadMedia } from "../core/utils/cloudinary";
@@ -72,7 +72,7 @@ export class MentorController extends BaseController implements IMentorControlle
 
       let uploadedCertificates: string[] = [];
       if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-        const files = req.files as Express.Multer.File[];
+        const files = req.files ;
         const uploadPromises = files.map((file) =>
           uploadMedia(file.path, "mentor_certificates", file.size).then((result) => result.url)
         );

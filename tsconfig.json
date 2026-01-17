@@ -9,6 +9,8 @@
     "strict": true,                                      /* Enable strict type checking. */
     "forceConsistentCasingInFileNames": true,            /* Prevent case mismatch errors in imports. */
     "skipLibCheck": true,                                /* Skip type checking of declaration files. */
+    "incremental": true,
+    "tsBuildInfoFile":".tsbuildinfo",
 
     /* TypeScript Enhancements */
     "resolveJsonModule": true,                           /* Allow importing .json files. */
@@ -51,5 +53,5 @@
     "noFallthroughCasesInSwitch": true                   /* Disallow fallthrough cases in switch statements. */
   },
   "include": ["src/**/*"],                               /* Compile all files in the src directory. */
-  "exclude": ["node_modules", "dist", "tests/**/*.test.ts"] /* Exclude unnecessary folders and test files. */
+  "exclude": ["node_modules", "dist", "logs", "uploads"] /* Exclude unnecessary folders and test files. */
 }

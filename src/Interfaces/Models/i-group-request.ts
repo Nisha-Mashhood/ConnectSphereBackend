@@ -1,6 +1,6 @@
 import { Document, Types } from "mongoose";
-import { IGroup } from "./IGroup";
-import { IUser } from "./IUser";
+import { IGroup } from "./i-group";
+import { IUser } from "./i-user";
 
 export interface IGroupRequest extends Document {
   _id: Types.ObjectId;

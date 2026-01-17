@@ -4,7 +4,6 @@ import { uploadMedia } from '../core/utils/cloudinary';
 import { HttpError } from '../core/utils/error-handler';
 import logger from '../core/utils/logger';
 import { GroupFormData } from '../Utils/types/group-types';
-import type { Express } from "express";
 import { IGroupController } from '../Interfaces/Controller/i-group-controller';
 import { StatusCodes } from "../enums/status-code-enums";
 import { BaseController } from '../core/controller/base-controller';
@@ -229,12 +228,8 @@ export class GroupController extends BaseController implements IGroupController{
     try {
       const { groupId } = req.params;
       logger.debug(`Updating group image for group: ${groupId}`);
-      const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
-      if (!files || Object.keys(files).length === 0) {
-        throw new HttpError(ERROR_MESSAGES.NO_FILE_UPLOADED, StatusCodes.BAD_REQUEST);
-      }
-      const profilePic = files["profilePic"]?.[0];
-      const coverPic = files["coverPic"]?.[0];
+      const profilePic = req.files ?.["profilePic"]?.[0];
+      const coverPic = req.files ?.["coverPic"]?.[0];
       if (!profilePic && !coverPic) {
         throw new HttpError(ERROR_MESSAGES.INVALID_FILE_UPLOAD, StatusCodes.BAD_REQUEST);
       }

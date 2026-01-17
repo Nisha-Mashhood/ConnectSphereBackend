@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     /* General */
-    "target": "ESNext",                                  /* JavaScript version for compiled files. */
-    "module": "NodeNext",                                /* Node.js-compatible module system. */
+    "target": "ES2020",                                  /* JavaScript version for compiled files. */
+    "module": "CommonJS",                                /* Node.js-compatible module system. */
     "rootDir": "./src",                                  /* Root folder for source files. */
     "outDir": "./dist",                                  /* Directory for compiled output files. */
     "esModuleInterop": true,                            /* Compatibility for CommonJS modules. */
@@ -26,7 +26,7 @@
     "inlineSources": true,                               /* Include original source code in source maps. */
 
     /* Advanced Options */
-    "moduleResolution": "NodeNext",                          /* Resolve modules in Node.js style. */
+    "moduleResolution": "Node",                          /* Resolve modules in Node.js style. */
     "allowSyntheticDefaultImports": true,                /* Allow default imports for modules without a default export. */
     "typeRoots": ["./node_modules/@types"], 
     "types": ["node"],             /* Specify the type definition root folder. */

@@ -1,10 +1,14 @@
 import * as dotenv from 'dotenv';
+import path from 'path';
 
-// const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
-// dotenv.config({ path: envFile });
+const env = (process.env.NODE_ENV || 'development').toLowerCase();
 
-if (process.env.NODE_ENV !== 'production') {
-  dotenv.config();
+// Only load .env file when we are in DEVELOPMENT
+if (env === 'development') {
+  // load .env.development
+  dotenv.config({
+    path: path.join(process.cwd(), '.env.development')
+  });
 }
 
 const config = {

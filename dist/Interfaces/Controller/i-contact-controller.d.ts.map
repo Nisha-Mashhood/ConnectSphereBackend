@@ -1,1 +1,0 @@
-{"version":3,"file":"i-contact-controller.d.ts","sourceRoot":"","sources":["../../../src/Interfaces/Controller/i-contact-controller.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAE,OAAO,EAAE,QAAQ,EAAE,MAAM,SAAS,CAAC;AAE1D,MAAM,WAAW,kBAAkB;IACjC,eAAe,CAAC,GAAG,EAAE,OAAO,EAAE,GAAG,EAAE,QAAQ,EAAE,IAAI,EAAC,YAAY,GAAG,OAAO,CAAC,IAAI,CAAC,CAAC;CAChF"}

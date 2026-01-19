@@ -1,1 +1,0 @@
-{"version":3,"file":"i-contact-service.js","sourceRoot":"","sources":["../../../src/Interfaces/Services/i-contact-service.ts"],"names":[],"mappings":"","sourcesContent":["import { FormattedContact } from \"../../Utils/types/contact-types\";\r\n\r\nexport interface IContactService {\r\n  getUserContacts: (userId?: string) => Promise<FormattedContact[]>;\r\n}"]}

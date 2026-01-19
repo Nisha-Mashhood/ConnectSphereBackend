@@ -1,1 +1,0 @@
-{"version":3,"file":"collaboration-types.js","sourceRoot":"","sources":["../../../src/Utils/types/collaboration-types.ts"],"names":[],"mappings":"","sourcesContent":["export interface LockedSlot {\r\n  day: string;\r\n  timeSlots: string[];\r\n}"]}

@@ -1,1 +1,0 @@
-{"version":3,"file":"i-contact-message-dto.d.ts","sourceRoot":"","sources":["../../../src/Interfaces/DTOs/i-contact-message-dto.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,kBAAkB;IACjC,EAAE,EAAE,MAAM,CAAC;IACX,gBAAgB,EAAE,MAAM,CAAC;IACzB,IAAI,EAAE,MAAM,CAAC;IACb,KAAK,EAAE,MAAM,CAAC;IACd,OAAO,EAAE,MAAM,CAAC;IAChB,SAAS,EAAE,IAAI,CAAC;IAChB,UAAU,EAAE,OAAO,CAAC;CACrB"}

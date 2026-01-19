@@ -1,1 +1,0 @@
-{"version":3,"file":"chat-message-mapper.d.ts","sourceRoot":"","sources":["../../../src/Utils/mappers/chat-message-mapper.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAE,MAAM,wCAAwC,CAAC;AACtE,OAAO,EAAE,eAAe,EAAE,MAAM,0CAA0C,CAAC;AAgB3E,wBAAgB,gBAAgB,CAAC,WAAW,EAAE,YAAY,GAAG,IAAI,GAAG,eAAe,GAAG,IAAI,CAgGzF;AAED,wBAAgB,iBAAiB,CAAC,YAAY,EAAE,YAAY,EAAE,GAAG,eAAe,EAAE,CAIjF"}

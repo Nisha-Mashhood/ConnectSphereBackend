@@ -1,1 +1,0 @@
-{"version":3,"file":"call-routes.js","sourceRoot":"","sources":["../../../src/Routes/Constants/call-routes.ts"],"names":[],"mappings":";;;AAAa,QAAA,eAAe,GAAG;IAC3B,kBAAkB,EAAE,YAAY;CAC3B,CAAA","sourcesContent":["export const CALL_LOG_ROUTES = {\r\n    getCallLogByUSerId: \"/call-logs\",\r\n}as const"]}

@@ -1,1 +1,0 @@
-{"version":3,"file":"i-call-controller.js","sourceRoot":"","sources":["../../../src/Interfaces/Controller/i-call-controller.ts"],"names":[],"mappings":"","sourcesContent":["import { NextFunction, Request, Response } from \"express\";\r\n\r\nexport interface ICallController {\r\n  getCallLogsByUserId(req: Request, res: Response, next:NextFunction): Promise<void>;\r\n}\r\n"]}

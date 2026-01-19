@@ -1,1 +1,0 @@
-{"version":3,"file":"feedback-mapper.d.ts","sourceRoot":"","sources":["../../../src/Utils/mappers/feedback-mapper.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,oCAAoC,CAAC;AAY/D,OAAO,EAAE,YAAY,EAAE,MAAM,sCAAsC,CAAC;AAEpE,wBAAgB,aAAa,CAAC,QAAQ,EAAE,SAAS,GAAG,IAAI,GAAG,YAAY,GAAG,IAAI,CAqF7E;AAED,wBAAgB,cAAc,CAAC,SAAS,EAAE,SAAS,EAAE,GAAG,YAAY,EAAE,CAIrE"}

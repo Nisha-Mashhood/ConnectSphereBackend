@@ -1,1 +1,0 @@
-{"version":3,"file":"contact-routes.js","sourceRoot":"","sources":["../../../src/Routes/Constants/contact-routes.ts"],"names":[],"mappings":";;;AAAa,QAAA,cAAc,GAAE;IACzB,eAAe,EAAE,OAAO;CAClB,CAAA","sourcesContent":["export const CONTACT_ROUTES ={\r\n    GetUserContacts: '/user'\r\n} as const"]}

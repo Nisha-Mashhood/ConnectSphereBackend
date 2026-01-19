@@ -1,1 +1,0 @@
-{"version":3,"file":"i-contact-message-dto.js","sourceRoot":"","sources":["../../../src/Interfaces/DTOs/i-contact-message-dto.ts"],"names":[],"mappings":"","sourcesContent":["export interface IContactMessageDTO {\r\n  id: string;\r\n  contactMessageId: string;\r\n  name: string;\r\n  email: string;\r\n  message: string;\r\n  createdAt: Date;\r\n  givenReply: boolean;\r\n}"]}

@@ -1,0 +1,32 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const ratelimit_middleware_1 = require("../../middlewares/ratelimit-middleware");
+const multer_1 = require("../../core/utils/multer");
+const mentor_routes_1 = require("../Constants/mentor-routes");
+const container_1 = __importDefault(require("../../container"));
+const router = (0, express_1.Router)();
+const mentorController = container_1.default.get('IMentorController');
+const authMiddleware = container_1.default.get('IAuthMiddleware');
+router.post(mentor_routes_1.MENTOR_ROUTES.CreateMentorProfile, [ratelimit_middleware_1.apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus, multer_1.upload.array('certificates', 2)], mentorController.createMentor);
+router.get(mentor_routes_1.MENTOR_ROUTES.CheckMentorStatus, [ratelimit_middleware_1.apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], mentorController.checkMentorStatus);
+router.get(mentor_routes_1.MENTOR_ROUTES.GetAllMentorRequests, [ratelimit_middleware_1.apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin')], mentorController.getAllMentorRequests);
+router.put(mentor_routes_1.MENTOR_ROUTES.ApproveMentorRequest, [ratelimit_middleware_1.apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin')], mentorController.approveMentorRequest);
+router.put(mentor_routes_1.MENTOR_ROUTES.RejectMentorRequest, [ratelimit_middleware_1.apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin')], mentorController.rejectMentorRequest);
+router.put(mentor_routes_1.MENTOR_ROUTES.CancelMentorship, [ratelimit_middleware_1.apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin')], mentorController.cancelMentorship);
+router.get(mentor_routes_1.MENTOR_ROUTES.GetMentorDetails, [ratelimit_middleware_1.apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], mentorController.getMentorDetails);
+router.get(mentor_routes_1.MENTOR_ROUTES.GetMentorExperience, [ratelimit_middleware_1.apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], mentorController.getMentorExperiences);
+router.put(mentor_routes_1.MENTOR_ROUTES.UpdateMentorProfile, [ratelimit_middleware_1.apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], mentorController.updateMentorProfile);
+router.get(mentor_routes_1.MENTOR_ROUTES.GetAllMentors, [ratelimit_middleware_1.apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], mentorController.getAllMentors);
+router.get(mentor_routes_1.MENTOR_ROUTES.GetMentorByUserId, [ratelimit_middleware_1.apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], mentorController.getMentorByUserId);
+router.get(mentor_routes_1.MENTOR_ROUTES.GetMentorAnalytics, [ratelimit_middleware_1.apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin')], mentorController.getMentorAnalytics);
+router.get(mentor_routes_1.MENTOR_ROUTES.GetSalesReport, [ratelimit_middleware_1.apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin')], mentorController.getSalesReport);
+router.post(mentor_routes_1.MENTOR_ROUTES.AddExperience, [ratelimit_middleware_1.apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], mentorController.addExperience);
+router.put(mentor_routes_1.MENTOR_ROUTES.UpdateExperience, [ratelimit_middleware_1.apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], mentorController.updateExperience);
+router.delete(mentor_routes_1.MENTOR_ROUTES.DeleteExperience, [ratelimit_middleware_1.apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], mentorController.deleteExperience);
+router.get(mentor_routes_1.MENTOR_ROUTES.DownloadSalesReposrt, [ratelimit_middleware_1.apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize("admin"),], mentorController.downloadSalesReportPDF);
+exports.default = router;
+//# sourceMappingURL=mentor-routes.js.map

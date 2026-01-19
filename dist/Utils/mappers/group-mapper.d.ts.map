@@ -1,0 +1,1 @@
+{"version":3,"file":"group-mapper.d.ts","sourceRoot":"","sources":["../../../src/Utils/mappers/group-mapper.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAY,MAAM,iCAAiC,CAAC;AACnE,OAAO,EAAE,SAAS,EAAe,MAAM,mCAAmC,CAAC;AAc3E,wBAAgB,UAAU,CAAC,KAAK,EAAE,MAAM,GAAG,IAAI,GAAG,SAAS,GAAG,IAAI,CAgFjE;AAED,wBAAgB,WAAW,CAAC,MAAM,EAAE,MAAM,EAAE,GAAG,SAAS,EAAE,CAIzD"}

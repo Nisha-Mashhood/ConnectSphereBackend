@@ -1,0 +1,1 @@
+{"version":3,"file":"review-mapper.d.ts","sourceRoot":"","sources":["../../../src/Utils/mappers/review-mapper.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,EAAE,MAAM,kCAAkC,CAAC;AAC3D,OAAO,EAAE,UAAU,EAAE,MAAM,oCAAoC,CAAC;AAOhE,wBAAgB,WAAW,CAAC,MAAM,EAAE,OAAO,GAAG,IAAI,GAAG,UAAU,GAAG,IAAI,CAqCrE;AAED,wBAAgB,YAAY,CAAC,OAAO,EAAE,OAAO,EAAE,GAAG,UAAU,EAAE,CAI7D"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"i-call-service.d.ts","sourceRoot":"","sources":["../../../src/Interfaces/Services/i-call-service.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,iBAAiB,EAAE,MAAM,8BAA8B,CAAC;AAEjE,MAAM,WAAW,YAAY;IACzB,mBAAmB,EAAE,CAAC,MAAM,CAAC,EAAE,MAAM,KAAK,OAAO,CAAC,iBAAiB,EAAE,CAAC,CAAA;CACzE"}

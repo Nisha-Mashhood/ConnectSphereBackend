@@ -1,0 +1,1 @@
+{"version":3,"file":"task-mapper.d.ts","sourceRoot":"","sources":["../../../src/Utils/mappers/task-mapper.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,EAAE,MAAM,gCAAgC,CAAC;AACvD,OAAO,EAAE,QAAQ,EAAE,MAAM,kCAAkC,CAAC;AAa5D,wBAAgB,SAAS,CAAC,IAAI,EAAE,KAAK,GAAG,IAAI,GAAG,QAAQ,GAAG,IAAI,CA6F7D;AAED,wBAAgB,UAAU,CAAC,KAAK,EAAE,KAAK,EAAE,GAAG,QAAQ,EAAE,CAIrD"}

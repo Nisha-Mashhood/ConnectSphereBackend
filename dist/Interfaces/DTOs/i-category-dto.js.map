@@ -1,0 +1,1 @@
+{"version":3,"file":"i-category-dto.js","sourceRoot":"","sources":["../../../src/Interfaces/DTOs/i-category-dto.ts"],"names":[],"mappings":"","sourcesContent":["export interface ICategoryDTO {\r\n  id: string;\r\n  categoryId: string;\r\n  name: string;\r\n  description?: string;\r\n  imageUrl?: string;\r\n  createdAt: Date;\r\n  updatedAt: Date;\r\n}"]}

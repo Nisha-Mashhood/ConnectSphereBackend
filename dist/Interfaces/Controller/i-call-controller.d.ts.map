@@ -1,0 +1,1 @@
+{"version":3,"file":"i-call-controller.d.ts","sourceRoot":"","sources":["../../../src/Interfaces/Controller/i-call-controller.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAE,OAAO,EAAE,QAAQ,EAAE,MAAM,SAAS,CAAC;AAE1D,MAAM,WAAW,eAAe;IAC9B,mBAAmB,CAAC,GAAG,EAAE,OAAO,EAAE,GAAG,EAAE,QAAQ,EAAE,IAAI,EAAC,YAAY,GAAG,OAAO,CAAC,IAAI,CAAC,CAAC;CACpF"}

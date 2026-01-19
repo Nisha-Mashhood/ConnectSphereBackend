@@ -1,0 +1,1 @@
+{"version":3,"file":"i-counter.js","sourceRoot":"","sources":["../../../src/Interfaces/Models/i-counter.ts"],"names":[],"mappings":"","sourcesContent":["import { Document } from \"mongoose\";\r\n\r\nexport interface ICounter extends Document {\r\n  _id: string; // Collection name (e.g., \"user\", \"mentor\")\r\n  sequence: number; // Last used number\r\n}\r\n"]}

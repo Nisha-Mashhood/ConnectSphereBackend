@@ -1,0 +1,1 @@
+{"version":3,"file":"i-call-service.js","sourceRoot":"","sources":["../../../src/Interfaces/Services/i-call-service.ts"],"names":[],"mappings":"","sourcesContent":["import { ICallLogPopulated } from \"../../Utils/types/call-types\";\r\n\r\nexport interface ICallService {\r\n    getCallLogsByUserId: (userId?: string) => Promise<ICallLogPopulated[]>\r\n}"]}

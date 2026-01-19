@@ -1,0 +1,1 @@
+{"version":3,"file":"category-mapper.d.ts","sourceRoot":"","sources":["../../../src/Utils/mappers/category-mapper.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,oCAAoC,CAAC;AAC/D,OAAO,EAAE,YAAY,EAAE,MAAM,sCAAsC,CAAC;AAGpE,wBAAgB,aAAa,CAAC,QAAQ,EAAE,SAAS,GAAG,IAAI,GAAG,YAAY,GAAG,IAAI,CAe7E;AAED,wBAAgB,cAAc,CAAC,UAAU,EAAE,SAAS,EAAE,GAAG,YAAY,EAAE,CAItE"}

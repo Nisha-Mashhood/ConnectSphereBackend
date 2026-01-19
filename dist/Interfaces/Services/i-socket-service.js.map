@@ -1,0 +1,1 @@
+{"version":3,"file":"i-socket-service.js","sourceRoot":"","sources":["../../../src/Interfaces/Services/i-socket-service.ts"],"names":[],"mappings":"","sourcesContent":["import { Server, Socket } from \"socket.io\";\r\n\r\nexport interface ISocketService {\r\n  initialize(io: Server): void;\r\n  handleDisconnect(socket: Socket): void;\r\n}"]}

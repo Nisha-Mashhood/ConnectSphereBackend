@@ -1,0 +1,1 @@
+{"version":3,"file":"i-contact-controller.js","sourceRoot":"","sources":["../../../src/Interfaces/Controller/i-contact-controller.ts"],"names":[],"mappings":"","sourcesContent":["import { NextFunction, Request, Response } from \"express\";\r\n\r\nexport interface IContactController {\r\n  getUserContacts(req: Request, res: Response, next:NextFunction): Promise<void>;\r\n}\r\n"]}

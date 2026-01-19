@@ -6,7 +6,7 @@ node_modules/
 
 
 # dist folder which contains transpled files
-dist/
+# dist/
 
 #uploads folder for local storage of images
 uploads/

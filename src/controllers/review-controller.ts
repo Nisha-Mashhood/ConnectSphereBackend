@@ -4,7 +4,7 @@ import logger from '../core/utils/logger';
 import { IReviewController } from '../Interfaces/Controller/i-review-controller';
 import { HttpError } from '../core/utils/error-handler';
 import { StatusCodes } from "../enums/status-code-enums";
-import { BaseController } from '../core/controller-temp/base-controller';
+import { BaseController } from '../core/controller/base-controller';
 import { IReviewService } from '../Interfaces/Services/i-review-service';
 import { REVIEW_MESSAGES } from '../constants/messages';
 import { ERROR_MESSAGES } from '../constants/error-messages';

@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 import logger from '../core/utils/logger';
 import { IUserConnectionController } from '../Interfaces/Controller/i-user-collaboration-controller';
-import { BaseController } from '../core/controller-temp/base-controller';
+import { BaseController } from '../core/controller/base-controller';
 import { IUserConnectionService } from '../Interfaces/Services/i-user-collaboration-service';
 import { USER_CONNECTION_MESSAGES } from '../constants/messages';
 

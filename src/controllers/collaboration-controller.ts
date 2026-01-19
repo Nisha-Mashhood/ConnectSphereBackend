@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { BaseController } from "../core/controller-temp/base-controller";
+import { BaseController } from "../core/controller/base-controller";
 import MentorRequest from "../Models/mentor-requset-model";
 import { IMentorRequest } from "../Interfaces/Models/i-mentor-request";
 import logger from "../core/utils/logger";

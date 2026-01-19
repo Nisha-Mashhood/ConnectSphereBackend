@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
 import logger from "../core/utils/logger";
 import { IAdminController } from "../Interfaces/Controller/i-admin-controller";
-import { BaseController } from "../core/controller-temp/base-controller";
+import { BaseController } from "../core/controller/base-controller";
 import { IAdminService } from "../Interfaces/Services/i-admin-service";
 import { ADMIN_MESSAGES, AUTH_MESSAGES } from "../constants/messages";
 import { ERROR_MESSAGES } from "../constants/error-messages";

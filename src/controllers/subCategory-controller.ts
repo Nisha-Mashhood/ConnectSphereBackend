@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
 import { ISubcategory } from "../Interfaces/Models/i-sub-category";
-import { BaseController } from '../core/controller-temp/base-controller';
+import { BaseController } from '../core/controller/base-controller';
 import logger from "../core/utils/logger";
 import { ISubcategoryController } from '../Interfaces/Controller/i-sub-category-controller';
 import { HttpError } from '../core/utils/error-handler';

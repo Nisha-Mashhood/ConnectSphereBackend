@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { BaseController } from '../core/controller-temp/base-controller';
+import { BaseController } from '../core/controller/base-controller';
 import logger from '../core/utils/logger';
 import { HttpError } from '../core/utils/error-handler';
 import { IChatController } from '../Interfaces/Controller/i-chat-controller';

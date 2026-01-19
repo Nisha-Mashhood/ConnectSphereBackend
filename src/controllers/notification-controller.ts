@@ -4,7 +4,7 @@ import logger from "../core/utils/logger";
 import { IAppNotification } from "../Interfaces/Models/i-app-notification";
 import { INotificationController } from "../Interfaces/Controller/i-notification-controller";
 import { StatusCodes } from "../enums/status-code-enums";
-import { BaseController } from "../core/controller-temp/base-controller";
+import { BaseController } from "../core/controller/base-controller";
 import { HttpError } from "../core/utils/error-handler";
 import { INotificationService } from "../Interfaces/Services/i-notification-service";
 import { ERROR_MESSAGES } from "../constants/error-messages";

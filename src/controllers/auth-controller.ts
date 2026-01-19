@@ -1,4 +1,4 @@
-import { BaseController } from '../core/controller-temp/base-controller';
+import { BaseController } from '../core/controller/base-controller';
 import { inject, injectable } from 'inversify';
 import { Request, Response, NextFunction } from 'express';
 import logger from '../core/utils/logger';

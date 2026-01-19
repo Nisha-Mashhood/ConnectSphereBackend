@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
-import { BaseController } from "../core/controller/base-controller";
+import { BaseController } from "../core/controller-temp/base-controller";
 import { uploadMedia } from "../core/utils/cloudinary";
 import logger from "../core/utils/logger";
 import { IMentorController } from "../Interfaces/Controller/i-mentor-controller";

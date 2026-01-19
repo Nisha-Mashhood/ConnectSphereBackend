@@ -1,5 +1,5 @@
 import { Model, Document, FilterQuery, UpdateQuery, ClientSession } from 'mongoose';
-import { IBaseRepository } from '../interfaces/Ibase-repositry';
+import { IBaseRepository } from '../interfaces-temp/Ibase-repositry';
 import logger from '../utils/logger';
 import { RepositoryError } from '../utils/error-handler';
 import { ERROR_MESSAGES } from '../../constants/error-messages';

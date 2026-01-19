@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { IBaseController } from '../interfaces/Ibase-controller';
+import { IBaseController } from '../interfaces-temp/Ibase-controller';
 import logger from '../utils/logger';
 import { StatusCodes } from '../../enums/status-code-enums';
 

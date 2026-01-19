@@ -4,7 +4,7 @@ import logger from '../core/utils/logger';
 import { IContactMessageController } from '../Interfaces/Controller/i-contact-us-controller';
 import { HttpError } from '../core/utils/error-handler';
 import { StatusCodes } from "../enums/status-code-enums";
-import { BaseController } from '../core/controller/base-controller';
+import { BaseController } from '../core/controller-temp/base-controller';
 import { IContactMessageService } from '../Interfaces/Services/i-contact-message-service';
 import { ERROR_MESSAGES } from '../constants/error-messages';
 import { CONTACT_MESSAGE_MESSAGES } from '../constants/messages';

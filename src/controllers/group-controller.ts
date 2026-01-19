@@ -6,7 +6,7 @@ import logger from '../core/utils/logger';
 import { GroupFormData } from '../Utils/types/group-types';
 import { IGroupController } from '../Interfaces/Controller/i-group-controller';
 import { StatusCodes } from "../enums/status-code-enums";
-import { BaseController } from '../core/controller/base-controller';
+import { BaseController } from '../core/controller-temp/base-controller';
 import { IGroupService } from '../Interfaces/Services/i-group-service';
 import { GROUP_MESSAGES } from '../constants/messages';
 import { ERROR_MESSAGES } from '../constants/error-messages';

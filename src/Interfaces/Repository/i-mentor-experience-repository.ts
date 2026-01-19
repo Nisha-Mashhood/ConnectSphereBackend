@@ -1,6 +1,6 @@
 import { ClientSession } from "mongoose";
 import { IMentorExperience } from "../Models/i-mentor-experience";
-import { IBaseRepository } from "../../core/interfaces/Ibase-repositry";
+import { IBaseRepository } from "../../core/interfaces-temp/Ibase-repositry";
 
 export interface IMentorExperienceRepository extends IBaseRepository<IMentorExperience>{
   createOne(data: Partial<IMentorExperience>, options?: { session?: ClientSession }): Promise<IMentorExperience>;

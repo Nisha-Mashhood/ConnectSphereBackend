@@ -6,7 +6,7 @@ import { Types } from 'mongoose';
 import { ITaskController } from '../Interfaces/Controller/i-task-controller';
 import { HttpError } from '../core/utils/error-handler';
 import { StatusCodes } from "../enums/status-code-enums";
-import { BaseController } from '../core/controller/base-controller';
+import { BaseController } from '../core/controller-temp/base-controller';
 import { ITaskService } from '../Interfaces/Services/i-task-service';
 import { TASK_MESSAGES } from '../constants/messages';
 import { ERROR_MESSAGES } from '../constants/error-messages';

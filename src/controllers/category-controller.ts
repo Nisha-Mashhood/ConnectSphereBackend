@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
-import { BaseController } from "../core/controller/base-controller";
+import { BaseController } from "../core/controller-temp/base-controller";
 import logger from "../core/utils/logger";
 import { CategoryRequest } from "../Utils/types/category-types";
 import { ICategoryController } from "../Interfaces/Controller/i-category-controller";

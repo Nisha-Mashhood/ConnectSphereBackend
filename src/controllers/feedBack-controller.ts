@@ -5,7 +5,7 @@ import { IFeedback } from '../Interfaces/Models/i-feedback';
 import { IFeedbackController } from '../Interfaces/Controller/i-feedBack-controller';
 import { HttpError } from '../core/utils/error-handler';
 import { StatusCodes } from "../enums/status-code-enums";
-import { BaseController } from '../core/controller/base-controller';
+import { BaseController } from '../core/controller-temp/base-controller';
 import { IFeedbackService } from '../Interfaces/Services/i-feedback-service';
 import { FEEDBACK_MESSAGES } from '../constants/messages';
 import { ERROR_MESSAGES } from '../constants/error-messages';

@@ -28,6 +28,7 @@
     "@logtail/node": "^0.5.6",
     "@logtail/winston": "^0.5.6",
     "@types/winston": "^2.4.4",
+    "agora-access-token": "^2.0.4",
     "axios": "^1.7.9",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^2.4.3",

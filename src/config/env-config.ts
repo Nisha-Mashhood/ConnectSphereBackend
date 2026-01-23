@@ -41,6 +41,8 @@ const config = {
   logLevel: process.env.LOG_LEVEL,
   logToken: process.env.BETTERSTACK_LOG_TOKEN,
   logEndPoint: process.env.BETTERSTACK_LOG_ENDPOINT,
+  agoraAppId: process.env.AGORA_APP_ID,
+  agoraAppCertificate: process.env.AGORA_APP_CERTIFICATE
 };
 
 export default config;

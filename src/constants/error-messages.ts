@@ -15,6 +15,7 @@ export const ERROR_MESSAGES = {
   DUPLICATE_CATEGORY_NAME: "Category name already exists",
   INVALID_PAGE_NUMBER: "Invalid page number",
   INVALID_LIMIT_VALUE: "Invalid limit value",
+  INVALID_REQUEST:"Error in passed data",
   REQUIRED_MESSAGE_FIELDS: "Missing required fields: file, senderId, targetId, or type",
   VIDEO_TOO_LARGE: "Video is too large; processing may take time",
   REQUIRED_USER_ID_OR_ROLE: "User ID or role not provided",

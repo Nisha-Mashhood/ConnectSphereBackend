@@ -117,6 +117,8 @@ import { IGroupCallSocketHandler } from './Interfaces/Services/i-group-call-sock
 import { GroupCallSocketHandler } from './socket/group-call-socket-handler';
 import { INotificationSocketHandler } from './Interfaces/Services/i-notification-socket-handler';
 import { NotificationSocketHandler } from './socket/notification-socket-handler';
+import { ICallTokenGenerator } from './Interfaces/Utils/i-call-token-generator';
+import { AgoraTokenGenerator } from './core/utils/agoraToken';
 
 
 const container = new Container();
@@ -190,6 +192,9 @@ container.bind<ISkillsController>('ISkillsController').to(SkillsController);
 container.bind<ISubcategoryController>('ISubCategoryController').to(SubcategoryController);
 container.bind<ITaskController>('ITaskController').to(TaskController);
 container.bind<IUserConnectionController>('IUserConnectionController').to(UserConnectionController);
+
+//Bind Interfaces to Util
+container.bind<ICallTokenGenerator>('ICallTokenGenerator').to(AgoraTokenGenerator);
 
 
 export default container;

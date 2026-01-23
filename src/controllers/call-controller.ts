@@ -46,4 +46,21 @@ export class CallController extends BaseController implements ICallController{
       next(error);
     }
   }
+
+  async getGroupCallToken(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const userId = req.currentUser?._id;
+    const { groupId } = req.body;
+
+    logger.info(`The frotEnd passed data : ,${userId}, ${groupId}`);
+
+    if (!userId || !groupId) {
+      throw new HttpError( ERROR_MESSAGES.INVALID_REQUEST, StatusCodes.BAD_REQUEST );
+    }
+    const token = await this._callService.generateGroupCallToken( groupId, userId.toString() );
+    this.sendSuccess(res, { token }, "Group call token generated");
+  } catch (error) {
+    next(error);
+  }
+}
 }

@@ -12,5 +12,6 @@ const authMiddleware = container.get<IAuthMiddleware>('IAuthMiddleware');
 
 
 router.get(CALL_LOG_ROUTES.getCallLogByUSerId, [apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], callController.getCallLogsByUserId.bind(callController));
+router.get(CALL_LOG_ROUTES.generateToken, [apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], callController.getGroupCallToken.bind(callController));
 
 export default router;

@@ -1,15 +1,17 @@
 import * as dotenv from 'dotenv';
-import path from 'path';
+// import path from 'path';
 
-const env = (process.env.NODE_ENV || 'development').toLowerCase();
+// const env = (process.env.NODE_ENV || 'development').toLowerCase();
 
 // Only load .env file when we are in DEVELOPMENT
-if (env === 'development') {
-  // load .env.development
-  dotenv.config({
-    path: path.join(process.cwd(), '.env.development')
-  });
-}
+// if (env === 'development') {
+//   // load .env.development
+//   dotenv.config({
+//     path: path.join(process.cwd(), '.env.development')
+//   });
+// }
+
+dotenv.config();
 
 const config = {
   port: process.env.PORT || 3000,

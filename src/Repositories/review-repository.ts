@@ -186,7 +186,7 @@ export class ReviewRepository extends BaseRepository<IReview> implements IReview
       logger.debug('Fetching selected and approved reviews');
       const reviews = await this.model
         .find({ isSelect: true, isApproved: true })
-        .populate('userId', '_id email name')
+        .populate('userId')
         .exec();
       logger.info(`Fetched ${reviews.length} selected and approved reviews`);
       return reviews;

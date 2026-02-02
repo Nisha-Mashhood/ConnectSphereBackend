@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 
 // const env = (process.env.NODE_ENV || 'development').toLowerCase();
 
-// Only load .env file when we are in DEVELOPMENT
+// // Only load .env file when we are in DEVELOPMENT
 // if (env === 'development') {
 //   // load .env.development
 //   dotenv.config({

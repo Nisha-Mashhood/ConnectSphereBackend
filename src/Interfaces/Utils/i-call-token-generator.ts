@@ -1,3 +1,3 @@
 export interface ICallTokenGenerator {
-  generateToken( channelName: string, userId: string ): Promise<string>;
+  generateToken( channelName: string ): Promise<{ token: string; agoraUid: number }>;
 }

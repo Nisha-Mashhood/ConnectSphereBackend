@@ -25,9 +25,9 @@ export class CallService implements ICallService{
         logger.error("User ID is required");
         throw new ServiceError("User ID is required");
       }
-      logger.debug(`Fetching call logs for userId: ${userId}`);
+      // logger.debug(`Fetching call logs for userId: ${userId}`);
       const callLogs = await this._callLogRepository.findCallLogsByUserId(userId);
-      logger.info(`Retrieved ${callLogs.length} call logs for userId: ${userId}`);
+      // logger.info(`Retrieved ${callLogs.length} call logs for userId: ${userId}`);
       return callLogs;
     } catch (error: any) {
       logger.error(`Error in CallService.getCallLogsByUserId: ${error.message}`);
@@ -35,19 +35,23 @@ export class CallService implements ICallService{
     }
   }
 
-  public generateGroupCallToken =  async( groupId: string, userId: string ): Promise<string> => {
+  public generateGroupCallToken =  async( groupId: string ): Promise<{ token: string; agoraUid: number; channelName: string }> => {
     try {
-      if (!userId || groupId) {
-        logger.error("User ID  and group Id both are required");
+      if ( !groupId) {
+        // logger.error("User ID  and group Id both are required");
         throw new ServiceError("User ID and group Id are required");
       }
-      logger.debug(`Creating Token for Agora fro Group call : ${userId}`);
       const channelName = `group-${groupId}`;
-      const token = this._callTokenGenerator.generateToken(channelName, userId);
-      logger.info(`created Token using agora ${token} call logs for userId: ${userId}`);
-      return token;
+      const { token, agoraUid } =
+        await this._callTokenGenerator.generateToken(channelName);
+
+      return {
+        token,
+        agoraUid,
+        channelName,
+      };
     } catch (error) {
-      logger.error(`Error in CallService.generateGroupCallToken: ${error}`);
+      // logger.error(`Error in CallService.generateGroupCallToken: ${error}`);
       throw new ServiceError(`Failed to create Token: ${error}`);
     }
   }

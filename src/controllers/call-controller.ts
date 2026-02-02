@@ -30,9 +30,9 @@ export class CallController extends BaseController implements ICallController{
 
       logger.debug(`Handling request to get call logs for userId: ${userId}`);
       const callLogs: ICallLogPopulated[] = await this._callService.getCallLogsByUserId(userId?.toString());
-      if (callLogs) {
-        logger.info("call Log fetched : ", callLogs);
-      }
+      // if (callLogs) {
+      //   logger.info("call Log fetched : ", callLogs);
+      // }
 
       if (callLogs.length === 0) {
         this.sendSuccess(res, [], CALL_MESSAGES.NO_CALL_LOGS_FOUND);
@@ -49,16 +49,13 @@ export class CallController extends BaseController implements ICallController{
 
   async getGroupCallToken(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const userId = req.currentUser?._id;
-    const { groupId } = req.body;
-
-    logger.info(`The frotEnd passed data : ,${userId}, ${groupId}`);
-
-    if (!userId || !groupId) {
+    const { groupId } = req.params;
+    logger.info(`The frontEnd passed groupId : ${groupId}`);
+    if ( !groupId) {
       throw new HttpError( ERROR_MESSAGES.INVALID_REQUEST, StatusCodes.BAD_REQUEST );
     }
-    const token = await this._callService.generateGroupCallToken( groupId, userId.toString() );
-    this.sendSuccess(res, { token }, "Group call token generated");
+    const { token, agoraUid, channelName } = await this._callService.generateGroupCallToken( groupId );
+    this.sendSuccess(res, { token, agoraUid, channelName }, "Group call token generated");
   } catch (error) {
     next(error);
   }

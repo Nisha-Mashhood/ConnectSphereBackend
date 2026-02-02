@@ -79,11 +79,11 @@ export class CallLogRepository extends BaseRepository<ICallLog> implements ICall
     try {
       logger.debug(`Finding call log by CallId: ${CallId}`);
       const callLog = await this.model.findOne({ CallId }).exec();
-      if (callLog) {
-        logger.debug(`Found call log: ${callLog._id}, CallId: ${CallId}`);
-      } else {
-        logger.debug(`No call log found for CallId: ${CallId}`);
-      }
+      // if (callLog) {
+      //   logger.debug(`Found call log: ${callLog._id}, CallId: ${CallId}`);
+      // } else {
+      //   logger.debug(`No call log found for CallId: ${CallId}`);
+      // }
       return callLog;
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -159,9 +159,9 @@ export class CallLogRepository extends BaseRepository<ICallLog> implements ICall
         })
       );
 
-      logger.info(
-        `Retrieved ${populatedCallLogs.length} call logs for userId: ${userId}`
-      );
+      // logger.info(
+      //   `Retrieved ${populatedCallLogs.length} call logs for userId: ${userId}`
+      // );
       return populatedCallLogs;
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));

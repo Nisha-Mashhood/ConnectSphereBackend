@@ -4,27 +4,27 @@ import { ICallTokenGenerator } from "../../Interfaces/Utils/i-call-token-generat
 
 @injectable()
 export class AgoraTokenGenerator implements ICallTokenGenerator {
-  async generateToken(
-    channelName: string,
-    userId: string
-  ): Promise<string> {
+  async generateToken( channelName: string ): Promise<{ token: string; agoraUid: number }> {
     const appId = process.env.AGORA_APP_ID!;
     const appCertificate = process.env.AGORA_APP_CERTIFICATE!;
-
-    // convert string userId to numeric uid (Agora requirement)
-    const uid = Number(userId.slice(-6));
-
+    
+    const agoraUid = Math.floor(Math.random() * 100000000);
     const role = RtcRole.PUBLISHER;
     const expirationTimeInSeconds = 60 * 60;
     const currentTimestamp = Math.floor(Date.now() / 1000);
 
-    return RtcTokenBuilder.buildTokenWithUid(
+    const token = RtcTokenBuilder.buildTokenWithUid(
       appId,
       appCertificate,
       channelName,
-      uid,
+      agoraUid,
       role,
       currentTimestamp + expirationTimeInSeconds
     );
+
+    return {
+      token,
+      agoraUid,
+    };
   }
 }

@@ -197,7 +197,7 @@ export class ChatService implements IChatService {
         }
       }
 
-      logger.info(`Unread message counts: ${JSON.stringify(unreadCounts)}`);
+      // logger.info(`Unread message counts: ${JSON.stringify(unreadCounts)}`);
       return unreadCounts;
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));

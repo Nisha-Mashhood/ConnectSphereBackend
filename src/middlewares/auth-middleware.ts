@@ -6,6 +6,7 @@ import { IUser } from '../Interfaces/Models/i-user';
 import { IJWTService } from '../Interfaces/Services/i-jwt-service';
 import { IUserRepository } from '../Interfaces/Repository/i-user-repositry';
 import { IAuthMiddleware } from '../Interfaces/Middleware/i-auth-middleware';
+import { StatusCodes } from '../enums/status-code-enums';
 
 // Extend Express Request type to include user
 declare global {
@@ -33,8 +34,7 @@ export class AuthMiddleware implements IAuthMiddleware{
     const accessToken = req.cookies.accessToken;
     logger.info(`Access Token: ${accessToken}`);
     if (!accessToken) {
-      logger.warn('Access token not found in request');
-      req.currentUser = undefined; 
+      req.currentUser = undefined;
       return next();
     }
     try {
@@ -43,14 +43,15 @@ export class AuthMiddleware implements IAuthMiddleware{
       const user = await this._userRepository.getUserById(decoded.userId);
       logger.debug(`Current user: ${user?._id}`);
       if (!user) {
-        logger.warn(`User not found for ID: ${decoded.userId}`);
-        throw new ServiceError('User not found');
+        req.currentUser = undefined;
+        return next();
       }
       req.currentUser = user;
       next();
     } catch (error: any) {
       logger.error(`Token verification failed: ${error.message}`);
-      throw new ServiceError('Invalid or expired token');
+      req.currentUser = undefined;
+      return next();
     }
   };
 
@@ -58,20 +59,20 @@ export class AuthMiddleware implements IAuthMiddleware{
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
       logger.warn('Refresh token not found in request');
-      throw new ServiceError('Refresh token not found');
+      return next(new ServiceError("Refresh token missing", StatusCodes.UNAUTHORIZED));
     }
     try {
       const decoded = this._jwtService.verifyRefreshToken(refreshToken);
       const user = await this._userRepository.getUserById(decoded.userId);
       if (!user || user.refreshToken !== refreshToken) {
         logger.warn(`Invalid refresh token for user ID: ${decoded.userId}`);
-        throw new ServiceError('Invalid refresh token');
+        return next(new ServiceError("Invalid refresh token", StatusCodes.UNAUTHORIZED));
       }
       req.currentUser = user;
       next();
     } catch (error: any) {
       logger.error(`Refresh token verification failed: ${error.message}`);
-      throw new ServiceError('Invalid or expired refresh token');
+      return next(new ServiceError("Invalid refresh token", StatusCodes.UNAUTHORIZED));
     }
   };
 

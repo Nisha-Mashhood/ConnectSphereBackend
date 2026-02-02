@@ -138,9 +138,9 @@ export class ContactService implements IContactService{
           contact.targetId !== ""
       );
 
-      logger.info(
-        `Retrieved ${validContacts.length} valid contacts for user: ${userId}`
-      );
+      // logger.info(
+      //   `Retrieved ${validContacts.length} valid contacts for user: ${userId}`
+      // );
       return validContacts;
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));

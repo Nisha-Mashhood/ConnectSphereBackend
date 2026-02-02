@@ -143,16 +143,17 @@ export class AuthController extends BaseController implements IAuthController{
   // Handle refresh token
   refreshToken = async (req: Request<{}, {}, RefreshTokenRequestBody>, res: Response, next: NextFunction) => {
     try {
-      const { refreshToken } = req.body;
+      const refreshToken = req.cookies.refreshToken;
       logger.debug(`Refresh token attempt`);
       if (!refreshToken) {
         throw new HttpError(ERROR_MESSAGES.REQUIRED_REFRESH_TOKEN, StatusCodes.BAD_REQUEST);
       }
       const { newAccessToken } = await this._authService.refreshToken(refreshToken);
+      logger.info("New access token issued");
       res.cookie("accessToken", newAccessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: "lax",
         maxAge: 15 * 60 * 1000,
       });
       this.sendSuccess(res, { newAccessToken }, AUTH_MESSAGES.REFRESH_SUCCESS);

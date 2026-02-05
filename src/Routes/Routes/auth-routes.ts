@@ -5,13 +5,15 @@ import { IAuthMiddleware } from '../../Interfaces/Middleware/i-auth-middleware';
 import { apiLimiter, authLimiter } from '../../middlewares/ratelimit-middleware';
 import { upload } from '../../core/utils/multer';
 import { IAuthController } from '../../Interfaces/Controller/i-auth-controller';
+import { validate } from '../../middlewares/validate-middleware';
+import { signupSchema } from '../../validations/signup-schema';
 
 const router = express.Router();
 const authController = container.get<IAuthController>('IAuthController');
 const authMiddleware = container.get<IAuthMiddleware>('IAuthMiddleware');
 
 // Public routes
-router.post(AUTH_ROUTES.Register, authLimiter, authController.signup.bind(authController));
+router.post(AUTH_ROUTES.Register, [ authLimiter, validate(signupSchema) ], authController.signup.bind(authController));
 router.post(AUTH_ROUTES.Login, authLimiter, authController.login.bind(authController));
 router.post(AUTH_ROUTES.ForgotPassword, authLimiter, authController.handleForgotPassword.bind(authController));
 router.post(AUTH_ROUTES.VerifyOTP, authLimiter, authController.handleVerifyOTP.bind(authController));

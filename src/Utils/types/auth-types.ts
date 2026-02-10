@@ -44,6 +44,7 @@ export interface VerifyOTPRequestBody {
 export interface ResetPasswordRequestBody {
   email: string;
   newPassword: string;
+  confirmPassword: string;
 }
 
 // Interface for logout request body
@@ -130,6 +131,11 @@ export interface VerifyOtpLoginResult {
   needsReviewPrompt: boolean;
 }
 
+export interface VerifyOtpForgotPasswordResult {
+  purpose: "forgot_password";
+  resetToken: string;
+}
+
 export interface VerifyOtpGenericResult {
   purpose: Exclude<OtpPurpose, "login">;
   email: string;
@@ -137,4 +143,5 @@ export interface VerifyOtpGenericResult {
 
 export type VerifyOtpResult =
   | VerifyOtpLoginResult
-  | VerifyOtpGenericResult;
+  | VerifyOtpGenericResult
+  | VerifyOtpForgotPasswordResult;

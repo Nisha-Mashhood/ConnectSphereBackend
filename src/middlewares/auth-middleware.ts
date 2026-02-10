@@ -31,29 +31,32 @@ export class AuthMiddleware implements IAuthMiddleware{
   }
 
   public verifyToken = async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
-    const accessToken = req.cookies.accessToken;
-    logger.info(`Access Token: ${accessToken}`);
-    if (!accessToken) {
-      req.currentUser = undefined;
-      return next();
-    }
-    try {
-      const decoded = this._jwtService.verifyAccessToken(accessToken);
-      logger.info(`Decoded Info: ${JSON.stringify(decoded)}`);
-      const user = await this._userRepository.getUserById(decoded.userId);
-      logger.debug(`Current user: ${user?._id}`);
-      if (!user) {
-        req.currentUser = undefined;
-        return next();
-      }
-      req.currentUser = user;
-      next();
-    } catch (error: any) {
-      logger.error(`Token verification failed: ${error.message}`);
-      req.currentUser = undefined;
-      return next();
-    }
-  };
+  const accessToken = req.cookies.accessToken;
+  logger.info(`[verifyToken] Access Token present: ${!!accessToken}`);
+
+  if (!accessToken) {
+    logger.warn("[verifyToken] No access token → currentUser = undefined");
+    req.currentUser = undefined;
+    return next();
+  }
+
+  try {
+    const decoded = this._jwtService.verifyAccessToken(accessToken);
+    logger.info(`[verifyToken] Decoded: ${JSON.stringify(decoded, null, 2)}`);
+
+    const user = await this._userRepository.getUserById(decoded.userId);
+    logger.info(`[verifyToken] User found: ${!!user}, email: ${user?.email}`);
+
+    req.currentUser = user || undefined;
+    
+    logger.info(`[verifyToken] Set req.currentUser → has email: ${!!req.currentUser?.email}`);
+    next();
+  } catch (error: any) {
+    logger.error(`[verifyToken] Failed: ${error.message}`);
+    req.currentUser = undefined;
+    return next();
+  }
+};
 
   public verifyRefreshToken = async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
     const refreshToken = req.cookies.refreshToken;

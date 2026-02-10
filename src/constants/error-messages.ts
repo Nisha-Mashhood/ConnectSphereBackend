@@ -1,4 +1,5 @@
 export const ERROR_MESSAGES = {
+  UNAUTHORIZED_ACCESS: "Acees Denied",
   REQUIRED_NAME_EMAIL_PASSWORD: "Name, email, and password are required",
   REQUIRED_EMAIL_PASSWORD: "Email and password are required",
   REQUIRED_AUTH_CODE: "Authorization code is required",
@@ -8,6 +9,7 @@ export const ERROR_MESSAGES = {
   REQUIRED_EMAIL_OTP: "Email and OTP are required",
   REQUIRED_EMAIL_AND_PURPOSE: "Email and purpose are required",
   REQUIRED_EMAIL_NEW_PASSWORD: "Email and new password are required",
+  REQUIRED_RESET_TOKEN: "Reset token missing",
   REQUIRED_PASSKEY: "Passkey is required",
   REQUIRED_USER_ID_ROLE: "User ID and role are required",
   REQUIRED_CURRENT_NEW_PASSWORD: "Current and new passwords are required",

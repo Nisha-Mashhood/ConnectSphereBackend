@@ -1,6 +1,7 @@
-import { SendOtpParams } from "../../types/auth-types";
+import { OtpPurpose, OtpRedisPayload, SendOtpParams } from "../../types/auth-types";
 import { saveOtpToRedis } from "./otp-redis-helper";
 import { sendEmail } from "../../../core/utils/email";
+import { redisClient } from "../../../config/redis-client-config";
 
 export const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
 
@@ -39,4 +40,16 @@ export const sendOtpAndStore = async (
   console.log("OTP SENT SUCCESSFULLY :",otp)
 
   return otpId;
+};
+
+export const getOtpByIdOnly = async (
+  purpose: OtpPurpose,
+  otpId: string
+): Promise<OtpRedisPayload | null> => {
+
+  const keys = await redisClient.keys(`otp:${purpose}:*:${otpId}`);
+  if (keys.length === 0) return null;
+
+  const value = await redisClient.get(keys[0]);
+  return value ? JSON.parse(value) : null;
 };

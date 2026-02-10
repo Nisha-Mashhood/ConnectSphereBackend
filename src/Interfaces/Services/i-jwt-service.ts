@@ -9,4 +9,6 @@ export interface IJWTService {
   setTokensInCookies(res: Response, accessToken: string, refreshToken: string): void;
   clearCookies(res: Response): void;
   removeRefreshToken(userEmail: string): Promise<{ message: string }>;
+  generateResetToken(payload: { email: string }): string;
+  verifyResetToken(token: string): { email: string };
 }

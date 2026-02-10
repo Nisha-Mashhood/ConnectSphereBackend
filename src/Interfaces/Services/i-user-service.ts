@@ -12,7 +12,7 @@ export interface IAuthService {
   forgotPassword: (email: string) => Promise<string>;
   verifyOTP: (purpose:OtpPurpose, email:string, otpId: string, otp: string) => Promise<VerifyOtpResult>;
   resendOtp: (email: string, purpose:OtpPurpose) => Promise<{ otpId: string }>;
-  resetPassword: (email: string, newPassword: string) => Promise<void>;
+  resetPassword: (restToken: string, newPassword: string) => Promise<void>;
   logout: (email: string) => Promise<void>;
   verifyAdminPasskey: (passkey: string) => Promise<boolean>;
   checkProfileCompletion: (userId: string) => Promise<boolean>;

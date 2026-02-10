@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import { ServiceError } from "../core/utils/error-handler";
 import { IUser } from "../Interfaces/Models/i-user";
 import bcrypt from "bcryptjs";
-import { sendOtpAndStore } from "../Utils/utils/auth-utils/o-t-p";
+import { getOtpByIdOnly, sendOtpAndStore } from "../Utils/utils/auth-utils/o-t-p";
 import config from "../config/env-config";
 import { OAuth2Client } from "../Utils/utils/auth-utils/google-config";
 import axios from "axios";
@@ -497,6 +497,16 @@ export class AuthService implements IAuthService {
               needsReviewPrompt,
             };
         }
+
+        if (purpose === "forgot_password") {
+          const resetToken = this._jwtService.generateResetToken({
+            email: normalizedEmail,
+          });
+          return {
+            purpose: "forgot_password",
+            resetToken,
+          };
+        }
         return {
           purpose,
           email: result.email,
@@ -511,23 +521,31 @@ export class AuthService implements IAuthService {
       }
   };
 
-  public resendOtp = async ( email: string, purpose: OtpPurpose ): Promise<{ otpId: string }> => {
-    const normalizedEmail = email.toLowerCase().trim();
-    const otpId = await sendOtpAndStore({
-      email: normalizedEmail,
+  public resendOtp = async ( otpId: string, purpose: OtpPurpose ): Promise<{ otpId: string }> => {
+    const existingOtp = await getOtpByIdOnly(purpose, otpId);
+
+      if (!existingOtp) {
+        throw new ServiceError(
+          "OTP session expired or invalid",
+          StatusCodes.BAD_REQUEST
+        );
+      }
+    const newOtpId = await sendOtpAndStore({
+      email: existingOtp.email,
       purpose,
       emailSubject: "Your OTP - ConnectSphere",
       emailBody: (otp: string) =>
       `Your OTP for ${purpose.replace("_", " ")} is: ${otp}. It will expire shortly.`,
     });
-    return { otpId };
+    return { otpId: newOtpId };
   };
 
   public resetPassword = async (
-    email: string,
+    resetToken: string,
     newPassword: string
   ): Promise<void> => {
     try {
+      const { email } = this._jwtService.verifyResetToken(resetToken);
       const user = await this._userRepository.findUserByEmail(email);
       if (!user) {
         throw new ServiceError("User not found", StatusCodes.NOT_FOUND);
@@ -545,15 +563,10 @@ export class AuthService implements IAuthService {
       );
       logger.info(`Password reset for ${email}`);
     } catch (error: unknown) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      logger.error(`Error resetting password for ${email}: ${err.message}`);
       throw error instanceof ServiceError
         ? error
-        : new ServiceError(
-            "Failed to reset password",
-            StatusCodes.INTERNAL_SERVER_ERROR,
-            err
-          );
+        : new ServiceError( "Failed to reset password",
+            StatusCodes.INTERNAL_SERVER_ERROR );
     }
   };
 

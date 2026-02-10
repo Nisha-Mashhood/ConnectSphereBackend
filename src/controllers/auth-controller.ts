@@ -183,22 +183,29 @@ export class AuthController extends BaseController implements IAuthController{
 
   // Get profile details
   getProfileDetails = async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
+    const requestedUserId = req.params.id;
+    const currentUser = req.currentUser!;
+    if (!currentUser) {
+      throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
+    }
     try {
-      const userId = req.params.id;
-      logger.debug(`Fetching profile details for userId: ${userId}`);
-      if (!userId) {
+      if ( currentUser.userId !== requestedUserId && currentUser.role !== 'admin' ) {
+        throw new HttpError( ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.FORBIDDEN );
+      }
+      logger.debug(`Fetching profile details for userId: ${currentUser.userId}`);
+      if (!currentUser) {
         throw new HttpError(ERROR_MESSAGES.REQUIRED_USER_ID, StatusCodes.BAD_REQUEST);
       }
-      const userDetails = await this._authService.profileDetails(userId);
+      const userDetails = await this._authService.profileDetails(currentUser.userId);
       if (!userDetails) {
         this.sendSuccess(res, { userDetails: null }, AUTH_MESSAGES.NO_USER_FOUND);
-        logger.info(`No user found for ID: ${userId}`);
+        logger.info(`No user found for ID: ${currentUser.userId}`);
         return;
       }
       this.sendSuccess(res, { userDetails }, AUTH_MESSAGES.PROFILE_FETCHED);
-      logger.info(`Profile details fetched for userId: ${userId}`);
+      logger.info(`Profile details fetched for userId: ${currentUser.userId}`);
     } catch (error) {
-      logger.error(`Error fetching profile details for userId ${req.params.id || "unknown"}: ${error}`);
+      logger.error(`Error fetching profile details for userId ${currentUser.userId || "unknown"}: ${error}`);
       next(error);
     }
   };
@@ -210,9 +217,13 @@ export class AuthController extends BaseController implements IAuthController{
     next: NextFunction
   ) => {
     try {
-      const userId = req.params.id;
-      logger.debug(`Updating profile for userId: ${userId}`);
-      if (!userId) {
+      const currentUser = req.currentUser!;
+      if (!currentUser) {
+      throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
+    }
+      const targetUserId = currentUser.role === 'admin' ? req.params.id : currentUser.userId;
+      logger.debug(`Updating profile for userId: ${targetUserId}`);
+      if (!targetUserId) {
         throw new HttpError(ERROR_MESSAGES.REQUIRED_USER_ID, StatusCodes.BAD_REQUEST);
       }
       const data: UpdateProfileRequestBody = req.body;
@@ -220,9 +231,9 @@ export class AuthController extends BaseController implements IAuthController{
       const coverPicFile = req.files ?.["coverPic"]?.[0];
       if (profilePicFile) data.profilePicFile = profilePicFile;
       if (coverPicFile) data.coverPicFile = coverPicFile;
-      const updatedUser = await this._authService.updateUserProfile(userId, data);
+      const updatedUser = await this._authService.updateUserProfile(targetUserId, data);
       this.sendSuccess(res, { user: updatedUser }, AUTH_MESSAGES.PROFILE_UPDATED);
-      logger.info(`Profile updated for userId: ${userId}`);
+      logger.info(`Profile updated for userId: ${targetUserId}`);
     } catch (error) {
       logger.error(`Error updating profile for userId ${req.params.id || "unknown"}: ${error}`);
       next(error);
@@ -230,24 +241,25 @@ export class AuthController extends BaseController implements IAuthController{
   };
 
   // Update user password
-  updatePassword = async (
-    req: Request<{ id: string }, {}, UpdatePasswordRequestBody>,
+  updatePassword = async ( req: Request<{ id: string }, {}, UpdatePasswordRequestBody>,
     res: Response,
     next: NextFunction
   ) => {
     try {
-      const userId = req.params.id;
-      logger.debug(`Updating password for userId: ${userId}`);
-      if (!userId) {
+      const currentUser = req.currentUser!;
+      if (!currentUser) {
+        throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
+      }
+      const targetUserId = currentUser.role === 'admin' ? req.params.id : currentUser.userId;
+      logger.debug(`Updating password for userId: ${targetUserId}`);
+      if (!targetUserId) {
         throw new HttpError(ERROR_MESSAGES.REQUIRED_USER_ID, StatusCodes.BAD_REQUEST);
       }
       const { currentPassword, newPassword } = req.body;
-      if (!currentPassword || !newPassword) {
-        throw new HttpError(ERROR_MESSAGES.REQUIRED_CURRENT_NEW_PASSWORD, StatusCodes.BAD_REQUEST);
-      }
-      const updatedUser = await this._authService.updatePassword(userId, currentPassword, newPassword);
+      
+      const updatedUser = await this._authService.updatePassword(targetUserId,currentPassword, newPassword);
       this.sendSuccess(res, { user: updatedUser }, AUTH_MESSAGES.PASSWORD_UPDATED);
-      logger.info(`Password updated for userId: ${userId}`);
+      logger.info(`Password updated for userId: ${targetUserId}`);
     } catch (error) {
       logger.error(`Error updating password for userId ${req.params.id || "unknown"}: ${error}`);
       next(error);
@@ -257,15 +269,19 @@ export class AuthController extends BaseController implements IAuthController{
   // Handle logout
   logout = async (req: Request<{}, {}, LogoutRequestBody>, res: Response, next: NextFunction) => {
     try {
-      const { email } = req.body;
-      logger.debug(`Logout attempt for email: ${email}`);
-      if (!email) {
+      const currentUser = req.currentUser!;
+      if (!currentUser) {
+        throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
+      }
+      logger.info("currentUser : ",currentUser)
+      logger.debug(`Logout attempt for email: ${currentUser.email}`);
+      if (!currentUser.email) {
         throw new HttpError(ERROR_MESSAGES.REQUIRED_EMAIL, StatusCodes.BAD_REQUEST);
       }
-      await this._authService.logout(email);
+      await this._authService.logout(currentUser.email);
       this._jwtService.clearCookies(res);
       this.sendSuccess(res, {}, AUTH_MESSAGES.LOGOUT_SUCCESS);
-      logger.info(`User logged out: ${email}`);
+      logger.info(`User logged out: ${currentUser.email}`);
     } catch (error) {
       logger.error(`Error in logout for email ${req.body.email || "unknown"}: ${error}`);
       next(error);
@@ -316,12 +332,12 @@ export class AuthController extends BaseController implements IAuthController{
 
   resendOtp = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, purpose } = req.body;
-    if (!email || !purpose) {
+    const { otpId, purpose } = req.body;
+    if (!otpId || !purpose) {
       throw new HttpError( ERROR_MESSAGES.REQUIRED_EMAIL_AND_PURPOSE, StatusCodes.BAD_REQUEST );
     }
-    const { otpId } = await this._authService.resendOtp(email, purpose);
-    this.sendSuccess( res, { otpId },  AUTH_MESSAGES.OTP_SENT );
+     const { otpId: newOtpId } = await this._authService.resendOtp(otpId, purpose);
+    this.sendSuccess( res, { otpId: newOtpId },  AUTH_MESSAGES.OTP_SENT );
   } catch (error) {
     next(error);
   }
@@ -330,16 +346,26 @@ export class AuthController extends BaseController implements IAuthController{
   // Handle reset password
   handleResetPassword = async (req: Request<{}, {}, ResetPasswordRequestBody>, res: Response, next: NextFunction) => {
     try {
-      const { email, newPassword } = req.body;
-      logger.debug(`Reset password attempt for email: ${email}`);
-      if (!email || !newPassword) {
+      const token = req.headers.authorization?.split(" ")[1];
+      if (!token) {
+        throw new HttpError(ERROR_MESSAGES.REQUIRED_RESET_TOKEN, StatusCodes.UNAUTHORIZED);
+      }
+      const { newPassword, confirmPassword } = req.body;
+      if (!newPassword ||!confirmPassword) {
         throw new HttpError(ERROR_MESSAGES.REQUIRED_EMAIL_NEW_PASSWORD, StatusCodes.BAD_REQUEST);
       }
-      await this._authService.resetPassword(email, newPassword);
+
+      if (newPassword !== confirmPassword) {
+        throw new HttpError(
+          "Passwords do not match",
+          StatusCodes.BAD_REQUEST
+        );
+      }
+
+      await this._authService.resetPassword(token, newPassword);
       this.sendSuccess(res, {}, AUTH_MESSAGES.PASSWORD_RESET);
-      logger.info(`Password reset for email: ${email}`);
     } catch (error) {
-      logger.error(`Error resetting password for email ${req.body.email || "unknown"}: ${error}`);
+      logger.error(`Error resetting password ${error}`);
       next(error);
     }
   };
@@ -435,19 +461,23 @@ export class AuthController extends BaseController implements IAuthController{
   // Get user Details by Id
   getUserById = async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
     try {
-      const { id } = req.params;
-      logger.debug(`Fetching user by ID: ${id}`);
-      if (!id) {
+      const currentUser = req.currentUser!;
+      if (!currentUser) {
+        throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
+      }
+      const targetUserId = currentUser.role === 'admin' ? req.params.id : currentUser.userId;
+      logger.debug(`Fetching user by ID: ${targetUserId}`);
+      if (!targetUserId) {
         throw new HttpError(ERROR_MESSAGES.REQUIRED_USER_ID, StatusCodes.BAD_REQUEST);
       }
-      const user = await this._authService.profileDetails(id);
+      const user = await this._authService.profileDetails(targetUserId);
       if (!user) {
         this.sendSuccess(res, { user: null }, AUTH_MESSAGES.NO_USER_FOUND);
-        logger.info(`No user found for ID: ${id}`);
+        logger.info(`No user found for ID: ${targetUserId}`);
         return;
       }
       this.sendSuccess(res, { user }, AUTH_MESSAGES.USER_FETCHED);
-      logger.info(`Fetched user: ${id}`);
+      logger.info(`Fetched user: ${targetUserId}`);
     } catch (error) {
       logger.error(`Error fetching user ${req.params.id || "unknown"}: ${error}`);
       next(error);

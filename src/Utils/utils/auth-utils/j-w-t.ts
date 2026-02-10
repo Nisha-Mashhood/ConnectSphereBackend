@@ -88,7 +88,7 @@ export class JWTServiceClass implements IJWTService{
       // logger.debug(`Verified refresh token: ${token}`);
       return payload;
     } catch (error) {
-      // logger.info(error);
+      logger.info(error);
       // logger.error(`Invalid or expired refresh token: ${token}`);
       throw new ServiceError('Invalid or expired refresh token');
     }
@@ -142,4 +142,42 @@ export class JWTServiceClass implements IJWTService{
       throw new ServiceError(`Error removing refresh token: ${error.message}`);
     }
   }
+
+  public generateResetToken = ( payload: { email: string }): string => {
+    if (!config.jwtSecret) {
+      throw new ServiceError("JWT secret is not defined");
+    }
+
+    try {
+      return jwt.sign(
+        {
+          email: payload.email,
+          type: "password_reset",
+        },
+        config.jwtSecret,
+        { expiresIn: "10m" }
+      );
+    } catch (error: any) {
+      throw new ServiceError(`Failed to generate reset token: ${error.message}`);
+    }
+  };
+
+  public verifyResetToken = (token: string): { email: string } => {
+    if (!config.jwtSecret) {
+      throw new ServiceError("JWT secret is not defined");
+    }
+
+    try {
+      const payload = jwt.verify(token, config.jwtSecret) as any;
+
+      if (payload.type !== "password_reset") {
+        throw new ServiceError("Invalid reset token");
+      }
+
+      return { email: payload.email };
+    } catch (error) {
+      logger.info(error);
+      throw new ServiceError(`Invalid or expired reset token`);
+    }
+  };
 }

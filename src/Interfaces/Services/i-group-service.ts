@@ -1,6 +1,7 @@
 import { GroupFormData, GroupQuery } from "../../Utils/types/group-types";
 import { IGroupDTO } from "../DTOs/i-group-dto";
 import { IGroupRequestDTO } from "../DTOs/i-group-request-dto";
+import { IUser } from "../Models/i-user";
 
 export interface IGroupService {
   createGroup: (groupData: GroupFormData) => Promise<IGroupDTO | null>;
@@ -13,6 +14,7 @@ export interface IGroupService {
   getGroupRequestsByUserId: (userId: string) => Promise<IGroupRequestDTO[]>;
   getGroupRequestById: (requestId: string) => Promise<IGroupRequestDTO | null>;
   modifyGroupRequestStatus: (
+    loggedinUser: IUser, 
     requestId: string,
     status: "Accepted" | "Rejected"
   ) => Promise<{
@@ -29,8 +31,8 @@ export interface IGroupService {
     groupRequestData: { groupId: string; userId: string },
     returnUrl: string
   ) => Promise<{ paymentIntent: any }>;
-  removeGroupMember: (groupId: string, userId: string) => Promise<IGroupDTO | null>;
-  deleteGroup: (groupId: string) => Promise<IGroupDTO | null>;
+  removeGroupMember: (groupId: string, userId: string, loggedinUser: IUser) => Promise<IGroupDTO | null>;
+  deleteGroup: (groupId: string, loggedinUser: IUser) => Promise<IGroupDTO | null>;
   updateGroupImage: (
     groupId: string,
     profilePic?: string,

@@ -161,9 +161,13 @@ export class GroupController extends BaseController implements IGroupController{
 
   updateGroupRequest = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const loggedinUser = req.currentUser;
+      if (!loggedinUser) {
+        throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
+      }
       const { requestId, status } = req.body;
       logger.debug(`Updating group request: ${requestId} to ${status} :- Controller`);
-      const result = await this._groupService.modifyGroupRequestStatus(requestId, status);
+      const result = await this._groupService.modifyGroupRequestStatus(loggedinUser, requestId, status);
       this.sendSuccess(res, { result }, GROUP_MESSAGES.GROUP_REQUEST_UPDATED);
     } catch (error: any) {
       logger.error(`Error in updateGroupRequest: ${error.message}`);
@@ -202,9 +206,13 @@ export class GroupController extends BaseController implements IGroupController{
 
   removeGroupMember = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const loggedinUser = req.currentUser;
+        if (!loggedinUser) {
+          throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
+        }
       const { groupId, userId } = req.body;
       logger.debug(`Removing user ${userId} from group ${groupId}`);
-      const response = await this._groupService.removeGroupMember(groupId, userId);
+      const response = await this._groupService.removeGroupMember(groupId, userId, loggedinUser);
       this.sendSuccess(res, { response }, GROUP_MESSAGES.MEMBER_REMOVED);
     } catch (error: any) {
       logger.error(`Error in removeGroupMember: ${error.message}`);
@@ -214,9 +222,13 @@ export class GroupController extends BaseController implements IGroupController{
 
   deleteGroup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const loggedinUser = req.currentUser;
+        if (!loggedinUser) {
+          throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
+        }
       const { groupId } = req.params;
       logger.debug(`Deleting group: ${groupId}`);
-      const response = await this._groupService.deleteGroup(groupId);
+      const response = await this._groupService.deleteGroup(groupId, loggedinUser);
       this.sendSuccess(res, { response }, GROUP_MESSAGES.GROUP_DELETED);
     } catch (error: any) {
       logger.error(`Error in deleteGroup: ${error.message}`);

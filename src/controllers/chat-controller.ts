@@ -96,11 +96,13 @@ export class ChatController extends BaseController implements IChatController{
 
   getUnreadMessageCounts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { userId } = req.query;
+      const userId = req.currentUser?._id;
+      
       if (!userId) {
-        throw new HttpError(ERROR_MESSAGES.REQUIRED_USER_ID, StatusCodes.BAD_REQUEST);
+        logger.error("User ID not provided in request");
+          throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.FORBIDDEN);
       }
-      const unreadCounts = await this._chatService.getUnreadMessageCounts(userId as string);
+      const unreadCounts = await this._chatService.getUnreadMessageCounts(userId.toString());
       if (Object.keys(unreadCounts).length === 0) {
         this.sendSuccess(res, { unreadCounts: {} }, CHAT_MESSAGES.NO_UNREAD_MESSAGES);
         logger.info(`No unread messages found for userId: ${userId}`);
@@ -115,11 +117,12 @@ export class ChatController extends BaseController implements IChatController{
 
   getLastMessageSummaries = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { userId } = req.query;
+      const userId = req.currentUser?._id;
       if (!userId) {
-        throw new HttpError(ERROR_MESSAGES.REQUIRED_USER_ID, StatusCodes.BAD_REQUEST);
+        logger.error("User ID not provided in request");
+          throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.FORBIDDEN);
       }
-      const summaries = await this._chatService.getLastMessageSummaries( userId as string );
+      const summaries = await this._chatService.getLastMessageSummaries( userId.toString() );
       this.sendSuccess( res, summaries, CHAT_MESSAGES.LAST_MESSAGE_SUMMARIES_RETRIEVED  );
     } catch (error) {
       next(error);

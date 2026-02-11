@@ -159,7 +159,7 @@ export class AdminController extends BaseController implements IAdminController 
         if (!user) {
           throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
         }
-        const userId = user._id.toString()
+        const userId = user._id.toString();
         logger.debug(`Updating profile for userId: ${userId}`);
         if (!userId) {
           throw new HttpError(ERROR_MESSAGES.REQUIRED_USER_ID, StatusCodes.BAD_REQUEST);

@@ -47,15 +47,58 @@ export class CollaborationService implements ICollaborationService {
   }
 
   public TemporaryRequestService = async (
-    requestData: Partial<IMentorRequest>
+    data: { mentorId: string; selectedSlot: { day: string; timeSlots: string[]; };},
+      userId: string
   ): Promise<IMentorRequestDTO | null> => {
     try {
       logger.debug(`Creating temporary request`);
-      const request = await this._collabRepository.createTemporaryRequest({
-        ...requestData,
+      const mentor = await this._mentorRepository.getMentorById(data.mentorId);
+        if (!mentor) {
+          throw new ServiceError("Mentor not found", StatusCodes.NOT_FOUND);
+        }
+  
+    const { day, timeSlots } = data.selectedSlot;
+
+      if (!day || !timeSlots?.length) {
+        throw new ServiceError("Invalid slot selection", StatusCodes.BAD_REQUEST);
+      }
+
+      const selectedTime = timeSlots[0];
+
+      const isSlotAvailable = await this._mentorRepository.isSlotAvailable( data.mentorId, day, selectedTime );
+      if (!isSlotAvailable) {
+        throw new ServiceError( "Selected slot not available for this mentor", StatusCodes.BAD_REQUEST );
+      }
+
+      const mentorConflict = await this.hasMentorSlotConflict( data.mentorId, day, selectedTime );
+      if (mentorConflict) {
+        throw new ServiceError("Mentor already booked for this slot", StatusCodes.CONFLICT);
+      }
+
+      const userConflict = await this.hasUserCollabSlotConflict( userId, day, selectedTime );
+      if (userConflict) {
+        throw new ServiceError("You already have a session at this time", StatusCodes.CONFLICT );
+      }
+
+      const price = mentor.price;
+      if (!price || price <= 0) {
+        throw new ServiceError( "Mentor price not set", StatusCodes.INTERNAL_SERVER_ERROR );
+      }
+      const timePeriod = mentor.timePeriod ?? 1;
+      const requestData: Partial<IMentorRequest> = {
+        mentorId: new Types.ObjectId(data.mentorId),
+        userId: new Types.ObjectId(userId),
+        selectedSlot: {
+          day,
+          timeSlots,
+        },
+        price,
+        timePeriod,
         paymentStatus: "Pending",
         isAccepted: "Pending",
-      });
+      };
+
+      const request = await this._collabRepository.createTemporaryRequest(requestData);
       logger.info(`Temporary request created: ${request._id}`);
       return toMentorRequestDTO(request);
     } catch (error: unknown) {
@@ -152,7 +195,8 @@ export class CollaborationService implements ICollaborationService {
   }
 
   public acceptRequest = async (
-    requestId: string
+    requestId: string,
+    userId: string,
   ): Promise<IMentorRequestDTO | null> => {
     try {
       logger.debug(`Accepting mentor request: ${requestId}`);
@@ -169,6 +213,18 @@ export class CollaborationService implements ICollaborationService {
     if (!existingRequest) {
       throw new ServiceError("Mentor request not found", StatusCodes.NOT_FOUND);
     }
+    const ownmentor = await this._mentorRepository.getMentorByUserId(userId);
+      if (!ownmentor) {
+        throw new ServiceError("Mentor profile not found", StatusCodes.NOT_FOUND);
+      }
+
+      /* OWNERSHIP VALIDATION */
+      if (ownmentor._id.toString() !== existingRequest.mentorId.toString()) {
+        throw new ServiceError(
+          "You are not allowed to modify this request",
+          StatusCodes.FORBIDDEN
+        );
+      }
 
     if ( !existingRequest.selectedSlot || !existingRequest.selectedSlot.day ||!existingRequest.selectedSlot.timeSlots ) {
       throw new ServiceError( "Selected time slot not found for this request", StatusCodes.BAD_REQUEST );
@@ -291,7 +347,8 @@ export class CollaborationService implements ICollaborationService {
   };
 
   public rejectRequest = async (
-    requestId: string
+    requestId: string,
+    userId: string
   ): Promise<IMentorRequestDTO | null> => {
     try {
       logger.debug(`Rejecting mentor request: ${requestId}`);
@@ -301,6 +358,25 @@ export class CollaborationService implements ICollaborationService {
           StatusCodes.BAD_REQUEST
         );
       }
+
+      const existingRequest = await this._collabRepository.findMentorRequestById(requestId);
+
+      if (!existingRequest) {
+        throw new ServiceError("Mentor request not found", StatusCodes.NOT_FOUND);
+      }
+      const ownmentor = await this._mentorRepository.getMentorByUserId(userId);
+        if (!ownmentor) {
+          throw new ServiceError("Mentor profile not found", StatusCodes.NOT_FOUND);
+        }
+
+        /* OWNERSHIP VALIDATION */
+        if (ownmentor._id.toString() !== existingRequest.mentorId.toString()) {
+          throw new ServiceError(
+            "You are not allowed to modify this request",
+            StatusCodes.FORBIDDEN
+          );
+        }
+        
       const updatedRequest = await this._collabRepository.updateMentorRequestStatus(
         requestId,
         "Rejected"
@@ -764,13 +840,12 @@ export class CollaborationService implements ICollaborationService {
 
   public cancelAndRefundCollab = async (
     collabId: string,
+    loggedinUser: IUser,
     reason: string,
     amount: number
   ): Promise<ICollaborationDTO | null> => {
     try {
-      logger.debug(
-        `Processing cancellation and refund for collaboration: ${collabId}`
-      );
+      logger.debug( `Processing cancellation and refund for collaboration: ${collabId}`);
       if (!Types.ObjectId.isValid(collabId)) {
         throw new ServiceError(
           "Invalid collaboration ID: must be a 24 character hex string",
@@ -780,16 +855,24 @@ export class CollaborationService implements ICollaborationService {
 
       const collab = await this._collabRepository.findCollabById(collabId);
       if (!collab) {
+        throw new ServiceError( "Collaboration not found", StatusCodes.NOT_FOUND);
+      }
+      const ownMentor = await this._mentorRepository.getMentorByUserId(loggedinUser._id.toString());
+      const isUserOwner = collab.userId.toString() === loggedinUser._id.toString();
+      let isMentorOwner;
+      if(ownMentor){
+        isMentorOwner = collab.mentorId.toString() === ownMentor._id.toString();
+      }
+      const isAdmin = loggedinUser.role === "admin";
+
+      if (!isUserOwner && !isMentorOwner && !isAdmin) {
         throw new ServiceError(
-          "Collaboration not found",
-          StatusCodes.NOT_FOUND
+          "You are not allowed to cancel this collaboration",
+          StatusCodes.FORBIDDEN
         );
       }
       if (!collab.payment) {
-        throw new ServiceError(
-          "No payment found for this collaboration",
-          StatusCodes.BAD_REQUEST
-        );
+        throw new ServiceError( "No payment found for this collaboration", StatusCodes.BAD_REQUEST);
       }
       if (collab.isCancelled) {
         throw new ServiceError(
@@ -799,7 +882,7 @@ export class CollaborationService implements ICollaborationService {
       }
 
       if (collab.paymentIntentId) {
-        const refundAmount = Math.round(amount * 100);
+        const refundAmount = Math.round(collab.price * 100);
         const refund = await stripe.refunds.create({
           payment_intent: collab.paymentIntentId,
           amount: refundAmount,

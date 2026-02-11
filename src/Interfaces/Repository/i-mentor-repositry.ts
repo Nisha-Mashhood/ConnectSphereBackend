@@ -34,4 +34,5 @@ export interface IMentorRepository {
     certifications: string[];
   }, options?: { session?: ClientSession }
 ): Promise<IMentor>;
+  isSlotAvailable: (mentorId: string, day: string, time: string)=> Promise<boolean>;
 }

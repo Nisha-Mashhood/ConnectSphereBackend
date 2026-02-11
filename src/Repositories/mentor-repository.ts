@@ -468,5 +468,26 @@ export class MentorRepository extends BaseRepository<IMentor> implements IMentor
     }
   }
 
+  public isSlotAvailable = async (mentorId: string, day: string, time: string): Promise<boolean> => {
+  try {
+    logger.debug( `Checking slot availability → mentorId: ${mentorId}, day: ${day}, time: ${time}`);
+
+    const mentor = await this.model.findOne({_id: this.toObjectId(mentorId),
+      availableSlots: {
+        $elemMatch: { day: day, timeSlots: time},
+      },
+    });
+    const isAvailable = !!mentor;
+
+    logger.info(`Slot ${isAvailable ? "AVAILABLE" : "NOT AVAILABLE"} for mentor ${mentorId}` );
+
+    return isAvailable;
+  } catch (error: unknown) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    logger.error("Error checking slot availability", err);
+
+    throw new RepositoryError( "Error checking slot availability", StatusCodes.INTERNAL_SERVER_ERROR, err);
+  }
+};
  
 }

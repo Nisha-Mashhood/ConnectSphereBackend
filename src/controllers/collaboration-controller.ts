@@ -22,11 +22,16 @@ export class CollaborationController extends BaseController implements ICollabor
 
   TemporaryRequestController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { mentorId, userId, selectedSlot, price, timePeriod } = req.body;
+      const user = req.currentUser;
+        if (!user) {
+          throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
+        }
+      const userId = user._id;
+      const { mentorId, selectedSlot } = req.body;
       logger.info(req.body);
 
-      const requestData = { mentorId, userId, selectedSlot, price, timePeriod };
-      const newRequest = await this._collabService.TemporaryRequestService(requestData);
+      const requestData = { mentorId, selectedSlot };
+      const newRequest = await this._collabService.TemporaryRequestService(requestData, userId.toString());
       this.sendCreated(res, newRequest, COLLABORATION_MESSAGES.REQUEST_CREATED);
     } catch (error: any) {
       next(error);
@@ -53,8 +58,13 @@ export class CollaborationController extends BaseController implements ICollabor
 
   acceptRequestController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const user = req.currentUser;
+        if (!user) {
+          throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
+        }
+      const userId = user._id;
       const { id } = req.params;
-      const request = await this._collabService.acceptRequest(id);
+      const request = await this._collabService.acceptRequest(id,userId.toString());
       this.sendSuccess(res, { request }, COLLABORATION_MESSAGES.REQUEST_ACCEPTED);
     } catch (error: any) {
       next(error);
@@ -63,8 +73,13 @@ export class CollaborationController extends BaseController implements ICollabor
 
   rejectRequestController = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const user = req.currentUser;
+        if (!user) {
+          throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
+        }
+      const userId = user._id;
       const { id } = req.params;
-      const request = await this._collabService.rejectRequest(id);
+      const request = await this._collabService.rejectRequest(id,userId.toString());
       this.sendSuccess(res, { request }, COLLABORATION_MESSAGES.REQUEST_REJECTED);
     } catch (error: any) {
       next(error);
@@ -159,13 +174,17 @@ export class CollaborationController extends BaseController implements ICollabor
 
   cancelAndRefundCollab = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const loggedinUser = req.currentUser;
+        if (!loggedinUser) {
+          throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
+        }
       const { collabId } = req.params;
       const { reason, amount } = req.body;
-      logger.info("Processing cancellation and refund with data:", { collabId, reason, amount });
+      logger.info("Processing cancellation and refund with data:", { collabId, loggedinUser, reason, amount });
       if (!reason || !amount) {
         throw new HttpError(ERROR_MESSAGES.REASON_AND_AMOUNT_REQUIRED, StatusCodes.BAD_REQUEST);
       }
-      const updatedCollab = await this._collabService.cancelAndRefundCollab(collabId, reason, amount);
+      const updatedCollab = await this._collabService.cancelAndRefundCollab(collabId, loggedinUser, reason, amount);
       this.sendSuccess(res, updatedCollab, COLLABORATION_MESSAGES.COLLABORATION_CANCELLED_WITH_REFUND);
     } catch (error: any) {
       next(error);

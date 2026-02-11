@@ -15,6 +15,7 @@ import { IGroupDTO } from "../Interfaces/DTOs/i-group-dto";
 import { IGroupRequestDTO } from "../Interfaces/DTOs/i-group-request-dto";
 import { toGroupDTO, toGroupDTOs } from "../Utils/mappers/group-mapper";
 import { toGroupRequestDTO, toGroupRequestDTOs } from "../Utils/mappers/group-request-mapper";
+import { IUser } from "../Interfaces/Models/i-user";
 
 @injectable()
 export class GroupService implements IGroupService {
@@ -393,6 +394,7 @@ export class GroupService implements IGroupService {
 
   //Accept the Request or Reject the request
   public modifyGroupRequestStatus = async (
+    loggedinUser: IUser,
     requestId: string,
     status: "Accepted" | "Rejected"
   ): Promise<{
@@ -452,6 +454,9 @@ export class GroupService implements IGroupService {
       if (!group) {
         logger.error(`Group not found: ${request.groupId._id}`);
         throw new ServiceError("Group not found", StatusCodes.NOT_FOUND);
+      }
+      if(group.adminId !== loggedinUser._id || loggedinUser.role !== 'admin'){
+        logger.error("Action forbidden only group-admin and application admin can update the staus of the requset")
       }
 
       if (status === "Accepted") {
@@ -675,7 +680,8 @@ export class GroupService implements IGroupService {
 
   public removeGroupMember = async (
     groupId: string,
-    userId: string
+    userId: string,
+    loggedinUser: IUser
   ): Promise<IGroupDTO | null> => {
     try {
       logger.debug(`Removing user ${userId} from group ${groupId}`);
@@ -692,6 +698,9 @@ export class GroupService implements IGroupService {
       if (!group) {
         logger.error(`Group not found: ${groupId}`);
         throw new ServiceError("Group not found", StatusCodes.NOT_FOUND);
+      }
+      if(group.adminId !== loggedinUser._id || loggedinUser.role !== 'admin'){
+        logger.error("Action forbidden only group-admin and application admin can remove a member")
       }
 
       const user = await this._userRepository.findById(userId);
@@ -766,7 +775,7 @@ export class GroupService implements IGroupService {
     }
   };
 
-  public deleteGroup = async (groupId: string): Promise<IGroupDTO | null> => {
+  public deleteGroup = async (groupId: string, loggedinUser: IUser): Promise<IGroupDTO | null> => {
     try {
       logger.debug(`Deleting group: ${groupId}`);
 
@@ -782,6 +791,10 @@ export class GroupService implements IGroupService {
       if (!group) {
         logger.error(`Group not found: ${groupId}`);
         throw new ServiceError("Group not found", StatusCodes.NOT_FOUND);
+      }
+
+      if(group.adminId !== loggedinUser._id || loggedinUser.role !== 'admin'){
+        logger.error("Action forbidden only group-admin and application admin can delete group")
       }
 
       await this._groupRepository.deleteGroupRequestsByGroupId(groupId);

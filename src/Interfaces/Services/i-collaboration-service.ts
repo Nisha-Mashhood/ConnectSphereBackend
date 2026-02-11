@@ -3,12 +3,14 @@ import { IMentorRequest } from "../Models/i-mentor-request";
 import { LockedSlot } from "../../Utils/types/collaboration-types";
 import { IMentorRequestDTO } from "../DTOs/i-mentor-request-dto";
 import { ICollaborationDTO } from "../DTOs/i-collaboration-dto";
+import { IUser } from "../Models/i-user";
 
 export interface ICollaborationService {
-  TemporaryRequestService: (requestData: Partial<IMentorRequest>) => Promise<IMentorRequestDTO | null>;
+  TemporaryRequestService: (data: { mentorId: string; selectedSlot: { day: string; timeSlots: string[]; };},
+  authenticatedUserId: string) => Promise<IMentorRequestDTO | null>;
   getMentorRequests: (mentorId: string) => Promise<IMentorRequestDTO[]>;
-  acceptRequest: (requestId: string) => Promise<IMentorRequestDTO | null>;
-  rejectRequest: (requestId: string) => Promise<IMentorRequestDTO | null>;
+  acceptRequest: (requestId: string, userId:string) => Promise<IMentorRequestDTO | null>;
+  rejectRequest: (requestId: string, userId:string) => Promise<IMentorRequestDTO | null>;
   getRequestForUser: (userId: string) => Promise<IMentorRequestDTO[]>;
   processPaymentService: (
     paymentMethodId: string,
@@ -20,7 +22,7 @@ export interface ICollaborationService {
   ) => Promise<{ paymentIntent: any; contacts?: any[] }>;
   getCollabDataForUserService: (userId: string, includeCompleted: boolean) => Promise<ICollaborationDTO[]>;
   getCollabDataForMentorService: (mentorId: string, includeCompleted: boolean) => Promise<ICollaborationDTO[]>;
-  cancelAndRefundCollab: (collabId: string, reason: string, amount: number) => Promise<ICollaborationDTO | null>;
+  cancelAndRefundCollab: (collabId: string, loggedinUser: IUser, reason: string, amount: number) => Promise<ICollaborationDTO | null>;
   getMentorRequestsService: (params: {
     page: number;
     limit: number;

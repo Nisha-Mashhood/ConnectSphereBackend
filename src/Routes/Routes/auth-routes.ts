@@ -16,8 +16,8 @@ const authController = container.get<IAuthController>('IAuthController');
 const authMiddleware = container.get<IAuthMiddleware>('IAuthMiddleware');
 
 // Public routes
-router.post(AUTH_ROUTES.Register, [ authLimiter, validate(signupSchema) ], authController.signup.bind(authController));
-router.post(AUTH_ROUTES.Login, [ authLimiter, validate(loginSchema) ], authController.login.bind(authController));
+router.post(AUTH_ROUTES.Register, [ authLimiter, validate(signupSchema, "body") ], authController.signup.bind(authController));
+router.post(AUTH_ROUTES.Login, [ authLimiter, validate(loginSchema, "body") ], authController.login.bind(authController));
 router.post(AUTH_ROUTES.ForgotPassword, [ authLimiter, validate(forgotPasswordSchema) ], authController.handleForgotPassword.bind(authController));
 router.post(AUTH_ROUTES.VerifyOTP, authLimiter, authController.handleVerifyOTP.bind(authController));
 router.post(AUTH_ROUTES.ResentOTP, authLimiter, authController.resendOtp.bind(authController));
@@ -48,7 +48,7 @@ router.put(
   [apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus, upload.fields([{ name: 'profilePic', maxCount: 1 }, { name: 'coverPic', maxCount: 1 }])],
   authController.updateUserDetails.bind(authController)
 );
-router.put(AUTH_ROUTES.UpdatePassword, [apiLimiter, validate(updatePasswordSchema), authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], authController.updatePassword.bind(authController))
+router.put(AUTH_ROUTES.UpdatePassword, [apiLimiter, validate(updatePasswordSchema, "body"), authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], authController.updatePassword.bind(authController))
 router.put(AUTH_ROUTES.BlockUser, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin')], authController.blockUser.bind(authController));
 router.put(AUTH_ROUTES.UnblockUser, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin')], authController.unblockUser.bind(authController));
 router.put(AUTH_ROUTES.ChangeRole, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin')], authController.changeRole.bind(authController));

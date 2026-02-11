@@ -638,43 +638,33 @@ export class MentorService implements IMentorService {
   };
 
   updateMentorById = async (
-    mentorId: string,
+    userId: string,
     updateData: Partial<IMentor>
   ): Promise<IMentorDTO | null> => {
     try {
-      logger.debug(`Updating mentor: ${mentorId}`);
-
-      if (!Types.ObjectId.isValid(mentorId)) {
-        logger.error("Invalid mentor ID");
-        throw new ServiceError(
-          "Mentor ID must be a valid ObjectId",
-          StatusCodes.BAD_REQUEST
-        );
-      }
-
-      const mentor = await this._mentorRepository.getMentorById(mentorId);
-      if (!mentor) {
-        logger.error(`Mentor not found: ${mentorId}`);
-        throw new ServiceError("Mentor not found", StatusCodes.NOT_FOUND);
+      const mentor = await this._mentorRepository.getMentorByUserId(userId);
+      if (!mentor) throw new ServiceError("Mentor profile not found", StatusCodes.NOT_FOUND);
+      if (mentor.isApproved !== "Completed") {
+        throw new ServiceError("Only approved mentors can add experiences", StatusCodes.FORBIDDEN);
       }
 
       const updatedMentor = await this._mentorRepository.updateMentorById(
-        mentorId,
+        mentor._id.toString(),
         updateData
       );
       if (!updatedMentor) {
-        logger.error(`Failed to update mentor: ${mentorId}`);
+        logger.error(`Failed to update mentor: ${mentor._id.toString()}`);
         throw new ServiceError(
           "Failed to update mentor",
           StatusCodes.INTERNAL_SERVER_ERROR
         );
       }
 
-      logger.info(`Mentor updated: ${mentorId}`);
+      logger.info(`Mentor updated: ${mentor._id.toString()}`);
       return toMentorDTO(updatedMentor);
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));
-      logger.error(`Error updating mentor ${mentorId}: ${err.message}`);
+      logger.error(`Error updating mentor ${userId}: ${err.message}`);
       throw error instanceof ServiceError
         ? error
         : new ServiceError(

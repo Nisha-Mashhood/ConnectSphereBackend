@@ -7,7 +7,7 @@ export const MENTOR_ROUTES = {
   CancelMentorship: '/cancelmentorship/:mentorId',
   GetMentorDetails: '/getmentorDetails/:mentorId',
   GetMentorExperience: '/experiences/:mentorId',
-  UpdateMentorProfile: '/update-mentor/:mentorId',
+  UpdateMentorProfile: '/update-mentor',
   GetAllMentors: '/getAllMentors',
   GetMentorByUserId: '/user/:userId',
   GetMentorAnalytics: '/mentor-analytics',

@@ -5,6 +5,8 @@ import { apiLimiter } from "../../middlewares/ratelimit-middleware";
 import { IAuthMiddleware } from "../../Interfaces/Middleware/i-auth-middleware";
 import { IAdminController } from "../../Interfaces/Controller/i-admin-controller";
 import { upload } from "../../core/utils/multer";
+import { validate } from '../../middlewares/validate-middleware';
+import { updateAdminProfileSchema, analyticsQuerySchema, limitQuerySchema } from "../../validations/admin-validator";
 
 const router = express.Router();
 const authMiddleware = container.get<IAuthMiddleware>('IAuthMiddleware');
@@ -16,12 +18,12 @@ router.get(ADMIN_DASHBOARD_ROUTES.GetTotalMentors, [apiLimiter, authMiddleware.v
 router.get(ADMIN_DASHBOARD_ROUTES.GetTotalRevenue, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin')], adminController.getTotalRevenue);
 router.get(ADMIN_DASHBOARD_ROUTES.GetPendingMentorRequestsCount, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin')], adminController.getPendingMentorRequestsCount);
 router.get(ADMIN_DASHBOARD_ROUTES.GetActiveCollaborationsCount, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin')], adminController.getActiveCollaborationsCount);
-router.get(ADMIN_DASHBOARD_ROUTES.GetRevenueTrends, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin')], adminController.getRevenueTrends);
-router.get(ADMIN_DASHBOARD_ROUTES.GetUserGrowth, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin')], adminController.getUserGrowth);
-router.get(ADMIN_DASHBOARD_ROUTES.GetPendingMentorRequests, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin')], adminController.getPendingMentorRequests);
-router.get(ADMIN_DASHBOARD_ROUTES.GetTopMentors, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin')], adminController.getTopMentors);
-router.get(ADMIN_DASHBOARD_ROUTES.GetRecentCollaborations, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin')], adminController.getRecentCollaborations);
-router.get(ADMIN_DASHBOARD_ROUTES.GetAdminDetails, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin')], adminController.getAdminProfileDetails);
+router.get(ADMIN_DASHBOARD_ROUTES.GetRevenueTrends, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin'), validate(analyticsQuerySchema, "query")], adminController.getRevenueTrends);
+router.get(ADMIN_DASHBOARD_ROUTES.GetUserGrowth, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin'), validate(analyticsQuerySchema, "query")], adminController.getUserGrowth);
+router.get(ADMIN_DASHBOARD_ROUTES.GetPendingMentorRequests, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin'), validate(limitQuerySchema, "query")], adminController.getPendingMentorRequests);
+router.get(ADMIN_DASHBOARD_ROUTES.GetTopMentors, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin'), validate(limitQuerySchema, "query")], adminController.getTopMentors);
+router.get(ADMIN_DASHBOARD_ROUTES.GetRecentCollaborations, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin'), validate(limitQuerySchema, "query")], adminController.getRecentCollaborations);
+router.get(ADMIN_DASHBOARD_ROUTES.GetAdminDetails, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin'), validate(updateAdminProfileSchema, "body"),], adminController.getAdminProfileDetails);
 router.put(ADMIN_DASHBOARD_ROUTES.UpdateAdminDetails, [apiLimiter, authMiddleware.verifyToken, upload.fields([{ name: 'profilePic', maxCount: 1 }]), authMiddleware.authorize('admin')], adminController.updateAdminDetails);
 
 export default router;

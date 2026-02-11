@@ -35,7 +35,7 @@ export interface IMentorService {
   rejectMentorRequest: (id: string, reason: string) => Promise<void>;
   cancelMentorship: (id: string) => Promise<void>;
   getMentorByUserId: (userId: string) => Promise<IMentorDTO | null>;
-  updateMentorById: (mentorId: string, updateData: Partial<IMentor>) => Promise<IMentorDTO | null>;
+  updateMentorById: (userId: string, updateData: Partial<IMentor>) => Promise<IMentorDTO | null>;
   getMentorAnalytics: (
     page?: number,
     limit?: number,

@@ -12,7 +12,7 @@ export const AUTH_ROUTES = {
   VerifyAdminPasskey: '/verify-admin-passkey',
   RefreshToken: '/refresh-token',
   Logout: '/logout',
-  CheckProfile: '/check-profile/:id',
+  CheckProfile: '/check-profile',
   ProfileDetails: '/profiledetails/:id',
   UpdateUserDetails: '/updateUserDetails/:id',
   GetAllUsers: '/getallusers',

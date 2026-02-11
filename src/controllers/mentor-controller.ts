@@ -12,73 +12,134 @@ import { ERROR_MESSAGES } from "../constants/error-messages";
 import { MentorExperienceInput } from "../Utils/types/mentor-types";
 
 @injectable()
-export class MentorController extends BaseController implements IMentorController{
+export class MentorController
+  extends BaseController
+  implements IMentorController
+{
   private _mentorService: IMentorService;
 
-  constructor(
-    @inject('IMentorService') mentorService : IMentorService,
-  ) {
+  constructor(@inject("IMentorService") mentorService: IMentorService) {
     super();
     this._mentorService = mentorService;
   }
 
-  checkMentorStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  checkMentorStatus = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       const { id } = req.params;
       const mentor = await this._mentorService.getMentorByUserId(id);
-      this.sendSuccess(res, { mentor: mentor || null }, MENTOR_MESSAGES.MENTOR_STATUS_RETRIEVED);
+      this.sendSuccess(
+        res,
+        { mentor: mentor || null },
+        MENTOR_MESSAGES.MENTOR_STATUS_RETRIEVED,
+      );
     } catch (error: any) {
       next(error);
     }
   };
 
-  getMentorDetails = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getMentorDetails = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       const { mentorId } = req.params;
       const mentor = await this._mentorService.getMentorByMentorId(mentorId);
       if (!mentor) {
-        this.sendSuccess(res,  mentor, MENTOR_MESSAGES.NO_MENTOR_FOUND);
+        this.sendSuccess(res, mentor, MENTOR_MESSAGES.NO_MENTOR_FOUND);
         return;
       }
-      this.sendSuccess(res, { mentor }, MENTOR_MESSAGES.MENTOR_DETAILS_RETRIEVED);
+      this.sendSuccess(
+        res,
+        { mentor },
+        MENTOR_MESSAGES.MENTOR_DETAILS_RETRIEVED,
+      );
     } catch (error: any) {
       next(error);
     }
   };
 
-  getMentorExperiences = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  try {
-    const { mentorId } = req.params;
-    const experiences = await this._mentorService.getMentorExperiences(mentorId);
-    if (!experiences) {
-        this.sendSuccess(res,  experiences, MENTOR_MESSAGES.NO_MENTOR_EXPERIENCE_FOUND);
+  getMentorExperiences = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const { mentorId } = req.params;
+      const experiences =
+        await this._mentorService.getMentorExperiences(mentorId);
+      if (!experiences) {
+        this.sendSuccess(
+          res,
+          experiences,
+          MENTOR_MESSAGES.NO_MENTOR_EXPERIENCE_FOUND,
+        );
         return;
       }
-    this.sendSuccess(res, { experiences }, MENTOR_MESSAGES.MENTOR_EXPERIENCE_DETAILS_RETRIEVED);
-  } catch (error: any) {
-    next(error);
-  }
-};
+      this.sendSuccess(
+        res,
+        { experiences },
+        MENTOR_MESSAGES.MENTOR_EXPERIENCE_DETAILS_RETRIEVED,
+      );
+    } catch (error: any) {
+      next(error);
+    }
+  };
 
-  createMentor = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  createMentor = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
-      const { userId, specialization, bio, price, skills, availableSlots, timePeriod, experiences } = req.body;
+      const user = req.currentUser;
+      if (!user) {
+        throw new HttpError(
+          ERROR_MESSAGES.UNAUTHORIZED_ACCESS,
+          StatusCodes.UNAUTHORIZED,
+        );
+      }
 
-      let parsedExperiences: MentorExperienceInput[] = experiences ? JSON.parse(experiences) : [];
+      const userId = user._id.toString();
+      const {
+        specialization,
+        bio,
+        price,
+        skills,
+        availableSlots,
+        timePeriod,
+        experiences,
+      } = req.body;
+
+      let parsedExperiences: MentorExperienceInput[] = experiences
+        ? JSON.parse(experiences)
+        : [];
 
       if (!Array.isArray(parsedExperiences)) {
-      throw new HttpError("Experiences must be an array", StatusCodes.BAD_REQUEST);
-    }
+        throw new HttpError(
+          "Experiences must be an array",
+          StatusCodes.BAD_REQUEST,
+        );
+      }
 
       let uploadedCertificates: string[] = [];
       if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-        const files = req.files ;
+        const files = req.files;
         const uploadPromises = files.map((file) =>
-          uploadMedia(file.path, "mentor_certificates", file.size).then((result) => result.url)
+          uploadMedia(file.path, "mentor_certificates", file.size).then(
+            (result) => result.url,
+          ),
         );
         uploadedCertificates = await Promise.all(uploadPromises);
       } else {
-        throw new HttpError(ERROR_MESSAGES.CERTIFICATES_REQUIRED, StatusCodes.BAD_REQUEST);
+        throw new HttpError(
+          ERROR_MESSAGES.CERTIFICATES_REQUIRED,
+          StatusCodes.BAD_REQUEST,
+        );
       }
 
       const newMentor = await this._mentorService.submitMentorRequest({
@@ -93,25 +154,43 @@ export class MentorController extends BaseController implements IMentorControlle
         experiences: parsedExperiences,
       });
 
-      this.sendCreated(res, newMentor, MENTOR_MESSAGES.MENTOR_REGISTRATION_SUBMITTED);
+      this.sendCreated(
+        res,
+        newMentor,
+        MENTOR_MESSAGES.MENTOR_REGISTRATION_SUBMITTED,
+      );
     } catch (error: any) {
       next(error);
     }
   };
 
-  getAllMentorRequests = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getAllMentorRequests = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
-      const { page = "1", limit = "10", search = "", status = "", sort = "desc" } = req.query;
+      const {
+        page = "1",
+        limit = "10",
+        search = "",
+        status = "",
+        sort = "desc",
+      } = req.query;
       const mentorRequests = await this._mentorService.getAllMentorRequests(
         parseInt(page as string),
         parseInt(limit as string),
         search as string,
         status as string,
-        sort as "asc" | "desc"
+        sort as "asc" | "desc",
       );
 
       if (mentorRequests.mentors.length === 0) {
-        this.sendSuccess(res, { mentors: [], total: 0 }, MENTOR_MESSAGES.NO_MENTOR_REQUESTS_FOUND);
+        this.sendSuccess(
+          res,
+          { mentors: [], total: 0 },
+          MENTOR_MESSAGES.NO_MENTOR_REQUESTS_FOUND,
+        );
         return;
       }
       this.sendSuccess(
@@ -122,16 +201,29 @@ export class MentorController extends BaseController implements IMentorControlle
           currentPage: parseInt(page as string),
           totalPages: mentorRequests.pages,
         },
-        MENTOR_MESSAGES.MENTOR_REQUESTS_RETRIEVED
+        MENTOR_MESSAGES.MENTOR_REQUESTS_RETRIEVED,
       );
     } catch (error: any) {
       next(error);
     }
   };
 
-  getAllMentors = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getAllMentors = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
-      const { search, page, limit, skill, category, sortBy, sortOrder, excludeMentorId } = req.query;
+      const {
+        search,
+        page,
+        limit,
+        skill,
+        category,
+        sortBy,
+        sortOrder,
+        excludeMentorId,
+      } = req.query;
       const query: any = {};
 
       if (search) query.search = search as string;
@@ -149,20 +241,26 @@ export class MentorController extends BaseController implements IMentorControlle
       if (result.mentors.length === 0) {
         this.sendSuccess(
           res,
-          { mentors: [], total: 0, page: query.page || 1, limit: query.limit || 10 },
-          MENTOR_MESSAGES.NO_MENTORS_FOUND
+          {
+            mentors: [],
+            total: 0,
+            page: query.page || 1,
+            limit: query.limit || 10,
+          },
+          MENTOR_MESSAGES.NO_MENTORS_FOUND,
         );
         return;
       }
 
-      const data = !search && !page && !limit && !skill
-        ? result.mentors
-        : {
-            mentors: result.mentors,
-            total: result.total,
-            page: query.page || 1,
-            limit: query.limit || 10,
-          };
+      const data =
+        !search && !page && !limit && !skill
+          ? result.mentors
+          : {
+              mentors: result.mentors,
+              total: result.total,
+              page: query.page || 1,
+              limit: query.limit || 10,
+            };
 
       this.sendSuccess(res, data, MENTOR_MESSAGES.MENTORS_FETCHED);
     } catch (error: any) {
@@ -171,12 +269,16 @@ export class MentorController extends BaseController implements IMentorControlle
     }
   };
 
-  getMentorByUserId = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getMentorByUserId = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       const { userId } = req.params;
       const mentor = await this._mentorService.getMentorByUserId(userId);
       if (!mentor) {
-        this.sendSuccess(res,  mentor, MENTOR_MESSAGES.NO_MENTOR_FOUND);
+        this.sendSuccess(res, mentor, MENTOR_MESSAGES.NO_MENTOR_FOUND);
         return;
       }
       this.sendSuccess(res, mentor, MENTOR_MESSAGES.MENTOR_RETRIEVED);
@@ -185,7 +287,11 @@ export class MentorController extends BaseController implements IMentorControlle
     }
   };
 
-  approveMentorRequest = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  approveMentorRequest = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       const { id } = req.params;
       await this._mentorService.approveMentorRequest(id);
@@ -195,12 +301,19 @@ export class MentorController extends BaseController implements IMentorControlle
     }
   };
 
-  rejectMentorRequest = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  rejectMentorRequest = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       const { id } = req.params;
       const { reason } = req.body;
       if (!reason) {
-        throw new HttpError(ERROR_MESSAGES.REJECTION_REASON_REQUIRED, StatusCodes.BAD_REQUEST);
+        throw new HttpError(
+          ERROR_MESSAGES.REJECTION_REASON_REQUIRED,
+          StatusCodes.BAD_REQUEST,
+        );
       }
       await this._mentorService.rejectMentorRequest(id, reason);
       this.sendSuccess(res, null, MENTOR_MESSAGES.MENTOR_REQUEST_REJECTED);
@@ -209,7 +322,11 @@ export class MentorController extends BaseController implements IMentorControlle
     }
   };
 
-  cancelMentorship = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  cancelMentorship = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       const { mentorId } = req.params;
       await this._mentorService.cancelMentorship(mentorId);
@@ -219,30 +336,70 @@ export class MentorController extends BaseController implements IMentorControlle
     }
   };
 
-  updateMentorProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  updateMentorProfile = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
-      const { mentorId } = req.params;
+      const user = req.currentUser;
+      if (!user) {
+        throw new HttpError(
+          ERROR_MESSAGES.UNAUTHORIZED_ACCESS,
+          StatusCodes.UNAUTHORIZED,
+        );
+      }
+
+      const userId = user._id.toString();
       const updateData = req.body;
-      const mentorData = await this._mentorService.updateMentorById(mentorId, updateData);
+      if(updateData?.isApproved){
+        throw new HttpError(
+          ERROR_MESSAGES.UNAUTHORIZED_ACCESS,
+          StatusCodes.UNAUTHORIZED,
+        );
+      }
+      const mentorData = await this._mentorService.updateMentorById(
+        userId,
+        updateData,
+      );
       this.sendSuccess(res, mentorData, MENTOR_MESSAGES.MENTOR_PROFILE_UPDATED);
     } catch (error: any) {
       next(error);
     }
   };
 
-  getMentorAnalytics = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getMentorAnalytics = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
-      const { page = "1", limit = "10", sortBy = "totalEarnings", sortOrder = "desc", search = "" } = req.query;
+      const {
+        page = "1",
+        limit = "10",
+        sortBy = "totalEarnings",
+        sortOrder = "desc",
+        search = "",
+      } = req.query;
 
-      const validSortFields = ["totalEarnings", "platformFees", "totalCollaborations", "avgCollabPrice"] as const;
+      const validSortFields = [
+        "totalEarnings",
+        "platformFees",
+        "totalCollaborations",
+        "avgCollabPrice",
+      ] as const;
       type SortByType = (typeof validSortFields)[number];
-      const validatedSortBy: SortByType = validSortFields.includes(sortBy as SortByType)
+      const validatedSortBy: SortByType = validSortFields.includes(
+        sortBy as SortByType,
+      )
         ? (sortBy as SortByType)
         : "totalEarnings";
 
       const validSortOrders = ["asc", "desc"] as const;
       type SortOrderType = (typeof validSortOrders)[number];
-      const validatedSortOrder: SortOrderType = validSortOrders.includes(sortOrder as SortOrderType)
+      const validatedSortOrder: SortOrderType = validSortOrders.includes(
+        sortOrder as SortOrderType,
+      )
         ? (sortOrder as SortOrderType)
         : "desc";
 
@@ -251,7 +408,7 @@ export class MentorController extends BaseController implements IMentorControlle
         parseInt(limit as string) || 10,
         validatedSortBy,
         validatedSortOrder,
-        search as string
+        search as string,
       );
       this.sendSuccess(
         res,
@@ -261,14 +418,18 @@ export class MentorController extends BaseController implements IMentorControlle
           currentPage: parseInt(page as string) || 1,
           totalPages: analytics.pages,
         },
-        MENTOR_MESSAGES.MENTOR_ANALYTICS_RETRIEVED
+        MENTOR_MESSAGES.MENTOR_ANALYTICS_RETRIEVED,
       );
     } catch (error: any) {
       next(error);
     }
   };
 
-  getSalesReport = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getSalesReport = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
       const { period = "1month" } = req.query;
       const report = await this._mentorService.getSalesReport(period as string);
@@ -278,41 +439,90 @@ export class MentorController extends BaseController implements IMentorControlle
     }
   };
 
-  addExperience = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  addExperience = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
-      const userId = req.query.userId as string;
-      if (!userId) {
-        throw new HttpError("Unauthorized", StatusCodes.UNAUTHORIZED);
+      const user = req.currentUser;
+      if (!user) {
+        throw new HttpError(
+          ERROR_MESSAGES.UNAUTHORIZED_ACCESS,
+          StatusCodes.UNAUTHORIZED,
+        );
       }
-      const experienceData = req.body;
-      const newExperience = await this._mentorService.addMentorExperience(userId, experienceData);
 
-      this.sendSuccess(res, { experience: newExperience }, "Experience added successfully");
+      const userId = user._id.toString();
+      const experienceData = req.body;
+      const newExperience = await this._mentorService.addMentorExperience(
+        userId,
+        experienceData,
+      );
+
+      this.sendSuccess(
+        res,
+        { experience: newExperience },
+        "Experience added successfully",
+      );
     } catch (error: any) {
       next(error);
     }
   };
 
-  updateExperience = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  updateExperience = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
-      const userId = req.query.userId as string;
+      const user = req.currentUser;
+      if (!user) {
+        throw new HttpError(
+          ERROR_MESSAGES.UNAUTHORIZED_ACCESS,
+          StatusCodes.UNAUTHORIZED,
+        );
+      }
+
+      const userId = user._id.toString();
       const { experienceId } = req.params;
       const updateData = req.body;
       if (!userId || !experienceId) {
         throw new HttpError("Invalid request", StatusCodes.BAD_REQUEST);
       }
 
-      const updatedExperience = await this._mentorService.updateMentorExperience(userId, experienceId, updateData);
+      const updatedExperience =
+        await this._mentorService.updateMentorExperience(
+          userId,
+          experienceId,
+          updateData,
+        );
 
-      this.sendSuccess(res, { experience: updatedExperience }, "Experience updated successfully");
+      this.sendSuccess(
+        res,
+        { experience: updatedExperience },
+        "Experience updated successfully",
+      );
     } catch (error: any) {
       next(error);
     }
   };
 
-  deleteExperience = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  deleteExperience = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
     try {
-      const userId = req.query.userId as string;
+      const user = req.currentUser;
+      if (!user) {
+        throw new HttpError(
+          ERROR_MESSAGES.UNAUTHORIZED_ACCESS,
+          StatusCodes.UNAUTHORIZED,
+        );
+      }
+
+      const userId = user._id.toString();
       const { experienceId } = req.params;
 
       if (!userId || !experienceId) {
@@ -326,33 +536,41 @@ export class MentorController extends BaseController implements IMentorControlle
     }
   };
 
-  downloadSalesReportPDF = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const { period } = req.query;
+  downloadSalesReportPDF = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    const { period } = req.query;
 
-  if (!period || typeof period !== "string") {
-    res.status(400).json({ message: "Period query parameter is required" });
-    return;
-  }
-  try {
-    logger.debug(`Admin requested sales report PDF for period: ${period}`);
+    if (!period || typeof period !== "string") {
+      res.status(400).json({ message: "Period query parameter is required" });
+      return;
+    }
+    try {
+      logger.debug(`Admin requested sales report PDF for period: ${period}`);
 
-    const pdfBuffer = await this._mentorService.generateSalesReportPDF(period);
+      const pdfBuffer =
+        await this._mentorService.generateSalesReportPDF(period);
 
-    const periodLabel =
-      period === "1month" ? "Last-30-Days" :
-      period === "1year" ? "Last-1-Year" :
-      "Last-5-Years";
+      const periodLabel =
+        period === "1month"
+          ? "Last-30-Days"
+          : period === "1year"
+            ? "Last-1-Year"
+            : "Last-5-Years";
 
-    const filename = `sales-report-${periodLabel}-${new Date().toISOString().split("T")[0]}.pdf`;
+      const filename = `sales-report-${periodLabel}-${new Date().toISOString().split("T")[0]}.pdf`;
 
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
-    res.send(pdfBuffer);
-  } catch (error: any) {
-    logger.error(`Error in downloadSalesReportPDF: ${error.message}`);
-    next(error);
-  }
-};
-
-
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${filename}"`,
+      );
+      res.send(pdfBuffer);
+    } catch (error: any) {
+      logger.error(`Error in downloadSalesReportPDF: ${error.message}`);
+      next(error);
+    }
+  };
 }

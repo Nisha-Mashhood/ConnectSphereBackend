@@ -128,11 +128,12 @@ export class AdminController extends BaseController implements IAdminController 
     // Get Admin profile details
     getAdminProfileDetails = async (req: Request<{ id: string }>, res: Response, next: NextFunction): Promise<void> => {
       try {
-        const userId = req.params.id;
-        logger.debug(`Fetching profile details for userId: ${userId}`);
-        if (!userId) {
-          throw new HttpError(ERROR_MESSAGES.REQUIRED_USER_ID, StatusCodes.BAD_REQUEST);
+        const user = req.currentUser;
+        if (!user) {
+          throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
         }
+        const userId = user._id.toString()
+        logger.debug(`Fetching profile details for userId: ${userId}`);
         const userDetails = await this._adminService.AdminprofileDetails(userId);
         if (!userDetails) {
           this.sendSuccess(res, { userDetails: null }, AUTH_MESSAGES.NO_USER_FOUND);
@@ -154,7 +155,11 @@ export class AdminController extends BaseController implements IAdminController 
       next: NextFunction
     ): Promise<void> => {
       try {
-        const userId = req.params.id;
+        const user = req.currentUser;
+        if (!user) {
+          throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
+        }
+        const userId = user._id.toString()
         logger.debug(`Updating profile for userId: ${userId}`);
         if (!userId) {
           throw new HttpError(ERROR_MESSAGES.REQUIRED_USER_ID, StatusCodes.BAD_REQUEST);

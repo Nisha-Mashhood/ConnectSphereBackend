@@ -40,22 +40,6 @@ export class MentorRepository extends BaseRepository<IMentor> implements IMentor
     return new Types.ObjectId(idStr);
   }
 
-  // public submitMentorRequest = async (data: Partial<IMentor>, options?: { session?: ClientSession }): Promise<IMentor> => {
-  //   try {
-  //     logger.debug(`Submitting mentor request for user: ${data.userId}`);
-  //     const mentor = await this.create({
-  //       ...data,
-  //       userId: this.toObjectId(data.userId),
-  //     }, options?.session);
-  //     logger.info(`Mentor request submitted: ${mentor._id}`);
-  //     return mentor;
-  //   } catch (error: unknown) {
-  //     const err = error instanceof Error ? error : new Error(String(error));
-  //     logger.error(`Error submitting mentor request for user ${data.userId}`, err);
-  //     throw new RepositoryError('Error submitting mentor request', StatusCodes.INTERNAL_SERVER_ERROR, err);
-  //   }
-  // }
-
    public saveMentorRequest = async (data: {
     userId: string;
     skills: string[];

@@ -167,7 +167,11 @@ export class AuthController extends BaseController implements IAuthController{
   // Check profile completion
   checkProfile = async (req: Request<{ id: string }>, res: Response, next: NextFunction) => {
     try {
-      const userId = req.params.id;
+      const user = req.currentUser;
+        if (!user) {
+          throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
+        }
+      const userId = user._id.toString()
       logger.debug(`Checking profile completion for userId: ${userId}`);
       if (!userId) {
         throw new HttpError(ERROR_MESSAGES.REQUIRED_USER_ID, StatusCodes.BAD_REQUEST);
@@ -189,23 +193,23 @@ export class AuthController extends BaseController implements IAuthController{
       throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
     }
     try {
-      if ( currentUser.userId !== requestedUserId && currentUser.role !== 'admin' ) {
+      if ( (currentUser._id. toString()) !== requestedUserId && currentUser.role !== 'admin' ) {
         throw new HttpError( ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.FORBIDDEN );
       }
-      logger.debug(`Fetching profile details for userId: ${currentUser.userId}`);
+      logger.debug(`Fetching profile details for userId: ${currentUser._id}`);
       if (!currentUser) {
         throw new HttpError(ERROR_MESSAGES.REQUIRED_USER_ID, StatusCodes.BAD_REQUEST);
       }
-      const userDetails = await this._authService.profileDetails(currentUser.userId);
+      const userDetails = await this._authService.profileDetails(currentUser._id. toString());
       if (!userDetails) {
         this.sendSuccess(res, { userDetails: null }, AUTH_MESSAGES.NO_USER_FOUND);
-        logger.info(`No user found for ID: ${currentUser.userId}`);
+        logger.info(`No user found for ID: ${currentUser._id}`);
         return;
       }
       this.sendSuccess(res, { userDetails }, AUTH_MESSAGES.PROFILE_FETCHED);
-      logger.info(`Profile details fetched for userId: ${currentUser.userId}`);
+      logger.info(`Profile details fetched for userId: ${currentUser._id}`);
     } catch (error) {
-      logger.error(`Error fetching profile details for userId ${currentUser.userId || "unknown"}: ${error}`);
+      logger.error(`Error fetching profile details for userId ${currentUser._id || "unknown"}: ${error}`);
       next(error);
     }
   };
@@ -221,7 +225,7 @@ export class AuthController extends BaseController implements IAuthController{
       if (!currentUser) {
       throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
     }
-      const targetUserId = currentUser.role === 'admin' ? req.params.id : currentUser.userId;
+      const targetUserId = currentUser.role === 'admin' ? req.params.id : currentUser._id. toString();
       logger.debug(`Updating profile for userId: ${targetUserId}`);
       if (!targetUserId) {
         throw new HttpError(ERROR_MESSAGES.REQUIRED_USER_ID, StatusCodes.BAD_REQUEST);
@@ -250,7 +254,7 @@ export class AuthController extends BaseController implements IAuthController{
       if (!currentUser) {
         throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
       }
-      const targetUserId = currentUser.role === 'admin' ? req.params.id : currentUser.userId;
+      const targetUserId = currentUser.role === 'admin' ? req.params.id : currentUser._id. toString();
       logger.debug(`Updating password for userId: ${targetUserId}`);
       if (!targetUserId) {
         throw new HttpError(ERROR_MESSAGES.REQUIRED_USER_ID, StatusCodes.BAD_REQUEST);
@@ -465,7 +469,7 @@ export class AuthController extends BaseController implements IAuthController{
       if (!currentUser) {
         throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
       }
-      const targetUserId = currentUser.role === 'admin' ? req.params.id : currentUser.userId;
+      const targetUserId = currentUser.role === 'admin' ? req.params.id : currentUser._id. toString();
       logger.debug(`Fetching user by ID: ${targetUserId}`);
       if (!targetUserId) {
         throw new HttpError(ERROR_MESSAGES.REQUIRED_USER_ID, StatusCodes.BAD_REQUEST);

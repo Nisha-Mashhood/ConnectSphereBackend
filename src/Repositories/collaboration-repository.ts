@@ -80,7 +80,7 @@ export class CollaborationRepository extends BaseRepository<ICollaboration> impl
     try {
       logger.debug(`Fetching mentor requests for mentor: ${mentorId}`);
       const requests = await this._mentorRequestModel
-        .find({ mentorId: this.toObjectId(mentorId), isAccepted: "Pending" })
+        .find({ mentorId: this.toObjectId(mentorId)})
         .populate({
           path: "mentorId",
           populate: { path: "userId", select: "_id name email profilePic" },

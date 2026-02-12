@@ -6,13 +6,13 @@ export const forgotPasswordSchema = z.object({
     .min(1, "Email is required")
     .email("Invalid email format")
     .max(100, "Email cannot exceed 100 characters")
-    .refine(v => !/\s{2,}/.test(v), {
+    .refine((v: string) => !/\s{2,}/.test(v), {
       message: "Cannot contain multiple consecutive spaces",
     })
-    .refine(v => !/(.)\1{3,}/.test(v), {
+    .refine((v: string) => !/(.)\1{3,}/.test(v), {
       message: "Cannot contain excessive repeated characters",
     })
-    .transform(v => v.trim()),
+    .transform((v: string) => v.trim()),
 });
 
 export type forgotPasswordInput = z.infer<typeof forgotPasswordSchema>;

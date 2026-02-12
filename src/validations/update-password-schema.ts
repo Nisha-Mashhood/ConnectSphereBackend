@@ -16,19 +16,19 @@ export const updatePasswordSchema = z.object({
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/,
       "New password must include uppercase, lowercase, number, and special character"
     )
-    .refine((v) => !/(\d)\1{2,}/.test(v), {
+    .refine((v: string) => !/(\d)\1{2,}/.test(v), {
       message: "Cannot contain sequential repeated digits",
     })
-    .refine((v) => !/([A-Za-z])\1{2,}/.test(v), {
+    .refine((v: string) => !/([A-Za-z])\1{2,}/.test(v), {
       message: "Cannot contain sequential repeated letters",
     })
-    .refine((v) => !/\s{2,}/.test(v), {
+    .refine((v: string) => !/\s{2,}/.test(v), {
       message: "Cannot contain multiple consecutive spaces",
     })
-    .refine((v) => !/(.)\1{3,}/.test(v), {
+    .refine((v: string) => !/(.)\1{3,}/.test(v), {
       message: "Cannot contain a character repeated more than 3 times in a row",
     })
-    .refine((v) => !/^[^A-Za-z0-9]/.test(v), {
+    .refine((v: string) => !/^[^A-Za-z0-9]/.test(v), {
       message: "Cannot start with a special character",
     }),
 

@@ -12,7 +12,7 @@ export const validate =
       req[target] = result;
 
       next();
-    } catch (err) {
+    } catch (err: unknown) {
       if (err instanceof ZodError) {
         res.status(400).json({
           success: false,

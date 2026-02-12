@@ -20,8 +20,8 @@ export const analyticsQuerySchema = z.object({
     .string()
     .regex(/^[0-9]+$/, "Days must be a number")
     .transform(Number)
-    .refine((val) => val > 0, "Days must be positive")
-    .refine((val) => val <= 365, "Days range too large"),
+    .refine((val: number) => val > 0, "Days must be positive")
+    .refine((val: number) => val <= 365, "Days range too large"),
 });
 
 export const updateAdminProfileSchema = z
@@ -31,13 +31,13 @@ export const updateAdminProfileSchema = z
       .min(3, "Name must be at least 3 characters")
       .max(50, "Name cannot exceed 50 characters")
       .regex(/^[A-Za-z ]+$/, "Only alphabets and spaces allowed")
-      .refine((v) => !/\s{2,}/.test(v), {
+      .refine((v: string) => !/\s{2,}/.test(v), {
         message: "Cannot contain multiple consecutive spaces",
       })
-      .refine((v) => !/^[^A-Za-z0-9]/.test(v), {
+      .refine((v: string) => !/^[^A-Za-z0-9]/.test(v), {
         message: "Cannot start with a special character",
       })
-      .refine((v) => !/(.)\1{3,}/.test(v), {
+      .refine((v: string) => !/(.)\1{3,}/.test(v), {
         message: "Cannot contain excessive repeated characters",
       }),
 
@@ -45,13 +45,13 @@ export const updateAdminProfileSchema = z
       .string()
       .email("Invalid email format")
       .max(100, "Email cannot exceed 100 characters")
-      .refine((v) => !/[A-Z]/.test(v), {
+      .refine((v: string) => !/[A-Z]/.test(v), {
         message: "Email must not contain uppercase letters",
       })
-      .refine((v) => !/\s{2,}/.test(v), {
+      .refine((v: string) => !/\s{2,}/.test(v), {
         message: "Cannot contain multiple consecutive spaces",
       })
-      .refine((v) => !/(.)\1{3,}/.test(v), {
+      .refine((v: string) => !/(.)\1{3,}/.test(v), {
         message: "Cannot contain excessive repeated characters",
       })
       .transform((v) => v.toLowerCase().trim()),

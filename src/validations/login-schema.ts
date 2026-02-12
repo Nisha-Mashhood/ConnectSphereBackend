@@ -6,13 +6,13 @@ export const loginSchema = z.object({
     .min(1, "Email is required")
     .email("Invalid email format")
     .max(100, "Email cannot exceed 100 characters")
-    .refine(v => !/\s{2,}/.test(v), {
+    .refine((v: string) => !/\s{2,}/.test(v), {
       message: "Cannot contain multiple consecutive spaces",
     })
-    .refine(v => !/(.)\1{3,}/.test(v), {
+    .refine((v: string) => !/(.)\1{3,}/.test(v), {
       message: "Cannot contain excessive repeated characters",
     })
-    .transform(v => v.trim()),
+    .transform((v: string) => v.trim()),
 
   password: z
     .string()
@@ -23,19 +23,19 @@ export const loginSchema = z.object({
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/,
       "Must include uppercase, lowercase, number, and special character"
     )
-    .refine(v => !/(\d)\1{2,}/.test(v), {
+    .refine((v: string) => !/(\d)\1{2,}/.test(v), {
       message: "Cannot contain sequential repeated digits",
     })
-    .refine(v => !/([A-Za-z])\1{2,}/.test(v), {
+    .refine((v: string) => !/([A-Za-z])\1{2,}/.test(v), {
       message: "Cannot contain sequential repeated letters",
     })
-    .refine(v => !/\s{2,}/.test(v), {
+    .refine((v: string) => !/\s{2,}/.test(v), {
       message: "Cannot contain multiple consecutive spaces",
     })
-    .refine(v => !/(.)\1{3,}/.test(v), {
+    .refine((v: string) => !/(.)\1{3,}/.test(v), {
       message: "Cannot contain excessive repeated characters",
     })
-    .refine(v => !/^[^A-Za-z0-9]/.test(v), {
+    .refine((v: string) => !/^[^A-Za-z0-9]/.test(v), {
       message: "Cannot start with a special character",
     }),
 });

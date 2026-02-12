@@ -457,6 +457,10 @@ export class AuthService implements IAuthService {
 
   public verifyOTP = async (purpose:OtpPurpose, email:string, otpId: string, otp: string): Promise<VerifyOtpResult> => {
     const normalizedEmail = email.toLowerCase().trim();
+    console.log("Purpose : ",purpose);
+    console.log("normalizedEmail : ",normalizedEmail);
+    console.log("otpId : ",otpId);
+    console.log("otp : ",otp);
       try {
       const result = await verifyOtpFromRedis(
         purpose,

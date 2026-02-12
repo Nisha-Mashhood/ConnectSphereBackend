@@ -225,6 +225,10 @@ export class AuthController extends BaseController implements IAuthController{
       if (!currentUser) {
       throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
     }
+    if(currentUser.role !== 'admin' && req.params.id !== currentUser._id.toString()){
+      throw new HttpError("Cannot modify another user", StatusCodes.FORBIDDEN)
+    }
+
       const targetUserId = currentUser.role === 'admin' ? req.params.id : currentUser._id. toString();
       logger.debug(`Updating profile for userId: ${targetUserId}`);
       if (!targetUserId) {
@@ -254,6 +258,10 @@ export class AuthController extends BaseController implements IAuthController{
       if (!currentUser) {
         throw new HttpError(ERROR_MESSAGES.UNAUTHORIZED_ACCESS, StatusCodes.UNAUTHORIZED);
       }
+      if(currentUser.role !== 'admin' && req.params.id !== currentUser._id.toString()){
+        throw new HttpError("Cannot modify another user", StatusCodes.FORBIDDEN)
+      }
+
       const targetUserId = currentUser.role === 'admin' ? req.params.id : currentUser._id. toString();
       logger.debug(`Updating password for userId: ${targetUserId}`);
       if (!targetUserId) {

@@ -1,4 +1,5 @@
 import { IMentor } from "../Models/i-mentor";
+import { IUser } from "../Models/i-user";
 import { CompleteMentorDetails, MentorAnalytics, MentorExperienceInput, MentorQuery, SalesReport } from "../../Utils/types/mentor-types";
 import { IMentorDTO } from "../DTOs/i-mentor-dto";
 import { IMentorExperienceDTO } from "../DTOs/i-mentor-experience-dto";
@@ -33,7 +34,7 @@ export interface IMentorService {
   getMentorExperiences: (mentorId: string)=> Promise<IMentorExperienceDTO[]>
   approveMentorRequest: (id: string) => Promise<void>;
   rejectMentorRequest: (id: string, reason: string) => Promise<void>;
-  cancelMentorship: (id: string) => Promise<void>;
+  cancelMentorship: (id: string, loggedinUser: IUser) => Promise<void>;
   getMentorByUserId: (userId: string) => Promise<IMentorDTO | null>;
   updateMentorById: (userId: string, updateData: Partial<IMentor>) => Promise<IMentorDTO | null>;
   getMentorAnalytics: (

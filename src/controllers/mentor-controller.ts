@@ -328,8 +328,16 @@ export class MentorController
     next: NextFunction,
   ): Promise<void> => {
     try {
+      const loggedinUser = req.currentUser;
+      if (!loggedinUser) {
+        throw new HttpError(
+          ERROR_MESSAGES.UNAUTHORIZED_ACCESS,
+          StatusCodes.UNAUTHORIZED,
+        );
+      }
+
       const { mentorId } = req.params;
-      await this._mentorService.cancelMentorship(mentorId);
+      await this._mentorService.cancelMentorship(mentorId, loggedinUser);
       this.sendSuccess(res, null, MENTOR_MESSAGES.MENTORSHIP_CANCELLED);
     } catch (error: any) {
       next(error);

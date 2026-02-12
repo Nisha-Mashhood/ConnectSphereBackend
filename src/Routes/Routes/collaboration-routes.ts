@@ -10,7 +10,7 @@ const collabController = container.get<ICollaborationController>('ICollaboration
 const authMiddleware = container.get<IAuthMiddleware>('IAuthMiddleware');
 
 
-router.post(COLLABORATION_ROUTES.CreateMentorProfile, [apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], collabController.TemporaryRequestController);
+router.post(COLLABORATION_ROUTES.SendMentorRequset, [apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], collabController.TemporaryRequestController);
 router.get(COLLABORATION_ROUTES.GetMentorRequests, [apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], collabController.getMentorRequestsController);
 router.post(COLLABORATION_ROUTES.AcceptRequest, [apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], collabController.acceptRequestController);
 router.post(COLLABORATION_ROUTES.RejectRequest, [apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], collabController.rejectRequestController);

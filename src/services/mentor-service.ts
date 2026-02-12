@@ -3,6 +3,7 @@ import { inject, injectable } from "inversify";
 import { sendEmail } from "../core/utils/email";
 import logger from "../core/utils/logger";
 import { IMentor } from "../Interfaces/Models/i-mentor";
+import { IUser } from "../Interfaces/Models/i-user";
 import {
   CompleteMentorDetails,
   MentorAnalytics,
@@ -527,7 +528,7 @@ export class MentorService implements IMentorService {
     }
   };
 
-  cancelMentorship = async (id: string): Promise<void> => {
+  cancelMentorship = async (id: string, loggedinUser: IUser): Promise<void> => {
     const session = await mongoose.startSession();
     session.startTransaction();
 
@@ -573,7 +574,7 @@ export class MentorService implements IMentorService {
           try {
             const refundAmount = collab.price * refundPercentage;
 
-            await this._collabService.cancelAndRefundCollab( collab.id, cancelReason, refundAmount );
+            await this._collabService.cancelAndRefundCollab( collab.id, loggedinUser, cancelReason, refundAmount );
 
             logger.info(`Successfully cancelled and refunded collaboration ${collab.id} (refund: ₹${refundAmount})`);
           } catch (cancelError: any) {

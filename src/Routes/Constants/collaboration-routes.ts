@@ -1,5 +1,5 @@
 export const COLLABORATION_ROUTES = {
-  CreateMentorProfile: '/create-mentorprofile',
+  SendMentorRequset: '/send-mentor-request',
   GetMentorRequests: '/get-mentor-requests',
   AcceptRequest: '/accept-request/:id',
   RejectRequest: '/reject-request/:id',

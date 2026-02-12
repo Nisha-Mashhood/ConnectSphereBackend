@@ -48,6 +48,13 @@ const startServer = async () => {
     credentials: true,
   }));
 
+  app.options("*", cors());
+
+  app.use((_req, res, next) => {
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
+
 
   // Routes
   app.use("/api/auth", authRoutes);

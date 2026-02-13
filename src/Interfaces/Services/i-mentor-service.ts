@@ -5,6 +5,11 @@ import { IMentorDTO } from "../DTOs/i-mentor-dto";
 import { IMentorExperienceDTO } from "../DTOs/i-mentor-experience-dto";
 import { IMentorExperience } from "../Models/i-mentor-experience";
 
+export interface AvailableSlot {
+  day: string;
+  timeSlots: string[];
+}
+
 export interface IMentorService {
   submitMentorRequest: (mentorData: {
     userId: string;

@@ -57,7 +57,12 @@ export class CollaborationService implements ICollaborationService {
           throw new ServiceError("Mentor not found", StatusCodes.NOT_FOUND);
         }
   
-    const { day, timeSlots } = data.selectedSlot;
+        const { day } = data.selectedSlot;
+        const rawSlots = data.selectedSlot.timeSlots;
+
+        const timeSlots = Array.isArray(rawSlots)
+                          ? rawSlots
+                          : [rawSlots];
 
       if (!day || !timeSlots?.length) {
         throw new ServiceError("Invalid slot selection", StatusCodes.BAD_REQUEST);
@@ -66,16 +71,19 @@ export class CollaborationService implements ICollaborationService {
       const selectedTime = timeSlots[0];
 
       const isSlotAvailable = await this._mentorRepository.isSlotAvailable( data.mentorId, day, selectedTime );
+      console.log("Slot Available :",isSlotAvailable);
       if (!isSlotAvailable) {
         throw new ServiceError( "Selected slot not available for this mentor", StatusCodes.BAD_REQUEST );
       }
 
       const mentorConflict = await this.hasMentorSlotConflict( data.mentorId, day, selectedTime );
+      console.log("mentorConflict :",mentorConflict);
       if (mentorConflict) {
         throw new ServiceError("Mentor already booked for this slot", StatusCodes.CONFLICT);
       }
 
       const userConflict = await this.hasUserCollabSlotConflict( userId, day, selectedTime );
+      console.log("userConflict :",userConflict);
       if (userConflict) {
         throw new ServiceError("You already have a session at this time", StatusCodes.CONFLICT );
       }
@@ -90,7 +98,7 @@ export class CollaborationService implements ICollaborationService {
         userId: new Types.ObjectId(userId),
         selectedSlot: {
           day,
-          timeSlots,
+          timeSlots: data.selectedSlot.timeSlots,
         },
         price,
         timePeriod,

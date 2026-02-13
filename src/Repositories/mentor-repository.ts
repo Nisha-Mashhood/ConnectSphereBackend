@@ -10,6 +10,8 @@ import { CompleteMentorDetails, MentorQuery } from "../Utils/types/mentor-types"
 import { StatusCodes } from "../enums/status-code-enums";
 import { IMentorRepository } from "../Interfaces/Repository/i-mentor-repositry";
 import { ClientSession } from "mongoose";
+import { isTimeWithinRange } from "../Utils/utils/mentor-utils/helper";
+import { AvailableSlot } from "../Interfaces/Services/i-mentor-service";
 
 @injectable()
 export class MentorRepository extends BaseRepository<IMentor> implements IMentorRepository {
@@ -468,26 +470,36 @@ export class MentorRepository extends BaseRepository<IMentor> implements IMentor
     }
   }
 
+
   public isSlotAvailable = async (mentorId: string, day: string, time: string): Promise<boolean> => {
-  try {
-    logger.debug( `Checking slot availability → mentorId: ${mentorId}, day: ${day}, time: ${time}`);
+    try {
+        const mentor = await this.model.findById(this.toObjectId(mentorId));
+          if (!mentor) return false;
 
-    const mentor = await this.model.findOne({_id: this.toObjectId(mentorId),
-      availableSlots: {
-        $elemMatch: { day: day, timeSlots: time},
-      },
-    });
-    const isAvailable = !!mentor;
+          const availableSlots = mentor.availableSlots as AvailableSlot[] | undefined;
+          if (!availableSlots?.length) return false;
 
-    logger.info(`Slot ${isAvailable ? "AVAILABLE" : "NOT AVAILABLE"} for mentor ${mentorId}` );
+          const normalizedDay = day.trim().toLowerCase();
+          const normalizedTime = time.trim();
 
-    return isAvailable;
-  } catch (error: unknown) {
-    const err = error instanceof Error ? error : new Error(String(error));
-    logger.error("Error checking slot availability", err);
+          const daySlots = availableSlots.find(
+            (slot) => slot.day.trim().toLowerCase() === normalizedDay
+          );
 
-    throw new RepositoryError( "Error checking slot availability", StatusCodes.INTERNAL_SERVER_ERROR, err);
-  }
-};
+          if (!daySlots?.timeSlots?.length) return false;
+          const isAvailable = daySlots.timeSlots.some(
+            (range: string) => isTimeWithinRange(normalizedTime, range)
+          );
+
+          logger.info( `Slot ${isAvailable ? "AVAILABLE" : "NOT AVAILABLE"} for mentor ${mentorId}` );
+
+          return isAvailable;
+        } catch (error: unknown) {
+          const err = error instanceof Error ? error : new Error(String(error));
+          logger.error("Error checking slot availability", err);
+
+          throw new RepositoryError( "Error checking slot availability", StatusCodes.INTERNAL_SERVER_ERROR, err);
+        }
+  };
  
 }

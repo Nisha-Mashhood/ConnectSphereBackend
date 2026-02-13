@@ -28,7 +28,7 @@ export class CollaborationController extends BaseController implements ICollabor
         }
       const userId = user._id;
       const { mentorId, selectedSlot } = req.body;
-      logger.info(req.body);
+      logger.info("Selected slot : ",req.body.selectedSlot);
 
       const requestData = { mentorId, selectedSlot };
       const newRequest = await this._collabService.TemporaryRequestService(requestData, userId.toString());

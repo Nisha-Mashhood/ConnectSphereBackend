@@ -12,11 +12,11 @@ const router = Router();
 const categoryController = container.get<ICategoryController>('ICategoryController');
 const authMiddleware = container.get<IAuthMiddleware>('IAuthMiddleware');
 
-router.post(CATEGORY_ROUTES.CreateCategory, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin'), validate(createCategorySchema), upload.single('image')], categoryController.createCategory);
+router.post(CATEGORY_ROUTES.CreateCategory, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin'), upload.single('image'), validate(createCategorySchema)], categoryController.createCategory);
 router.get(CATEGORY_ROUTES.GetCategories, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin')], categoryController.getAllCategories);
 router.get(CATEGORY_ROUTES.FetchCategories, [apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], categoryController.fetchAllCategories);
 router.get(CATEGORY_ROUTES.GetCategory, [apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], categoryController.getCategoryById);
-router.put(CATEGORY_ROUTES.UpdateCategory, [apiLimiter, authMiddleware.verifyToken, validate(categoryIdParamSchema, "params"), validate(updateCategorySchema), authMiddleware.authorize('admin'), upload.single('image')], categoryController.updateCategory);
+router.put(CATEGORY_ROUTES.UpdateCategory, [apiLimiter, authMiddleware.verifyToken, validate(categoryIdParamSchema, "params"), authMiddleware.authorize('admin'), upload.single('image'), validate(updateCategorySchema)], categoryController.updateCategory);
 router.delete(CATEGORY_ROUTES.DeleteCategory, [apiLimiter, authMiddleware.verifyToken, validate(categoryIdParamSchema, "params"), authMiddleware.authorize('admin')], categoryController.deleteCategory);
 
 export default router;

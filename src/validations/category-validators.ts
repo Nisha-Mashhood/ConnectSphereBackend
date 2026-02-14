@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { nameSchema, objectIdSchema } from "./common-validators";
+import { nameSchema, objectIdSchema } from "./common.validators";
 
 /** Create */
 export const createCategorySchema = z.object({

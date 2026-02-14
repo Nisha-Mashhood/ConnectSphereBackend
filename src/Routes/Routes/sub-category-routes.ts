@@ -15,7 +15,7 @@ const authMiddleware = container.get<IAuthMiddleware>('IAuthMiddleware');
 router.post(SUBCATEGORY_ROUTES.CreateSubcategory, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin'), upload.single('image'), validate(createSubcategorySchema)], subcategoryController.createSubcategory);
 router.get(SUBCATEGORY_ROUTES.GetSubcategories, [apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], subcategoryController.getAllSubcategories);
 router.get(SUBCATEGORY_ROUTES.GetSubcategoryById, [apiLimiter, authMiddleware.verifyToken, authMiddleware.checkBlockedStatus], subcategoryController.getSubcategoryById);
-router.put(SUBCATEGORY_ROUTES.UpdateSubcategory, [apiLimiter, authMiddleware.verifyToken, validate(subcategoryParamSchema), authMiddleware.authorize('admin'), upload.single('image'), validate(updateSubcategorySchema)], subcategoryController.updateSubcategory);
+router.put(SUBCATEGORY_ROUTES.UpdateSubcategory, [apiLimiter, authMiddleware.verifyToken, authMiddleware.authorize('admin'), upload.single('image'), validate(updateSubcategorySchema)], subcategoryController.updateSubcategory);
 router.delete(SUBCATEGORY_ROUTES.DeleteSubcategory, [apiLimiter, authMiddleware.verifyToken, validate(subcategoryParamSchema), authMiddleware.authorize('admin')], subcategoryController.deleteSubcategory);
 
 export default router;

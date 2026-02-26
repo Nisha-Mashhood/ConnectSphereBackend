@@ -11,7 +11,7 @@ export abstract class BaseRepository<T extends Document> implements IBaseReposit
   // Constructor for Initializing the Model
   constructor(model: Model<T>) {
     this.model = model;
-    logger.debug(`Initialized repository for model: ${model.modelName}`);
+    // logger.debug(`Initialized repository for model: ${model.modelName}`);
   }
 
   // Create a new entity

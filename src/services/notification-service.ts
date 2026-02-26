@@ -41,7 +41,7 @@ export class NotificationService  implements INotificationService{
 
   initializeSocket(_io: Server) {
     io = _io;
-    logger.info("Notification service initialized with Socket.IO");
+    // logger.info("Notification service initialized with Socket.IO");
     this.startNotificationInterval();
   }
 

@@ -9,14 +9,20 @@ import { StatusCodes } from "../enums/status-code-enums";
 import { inject, injectable } from "inversify";
 import { IUserRepository } from "../Interfaces/Repository/i-user-repositry";
 import { ERROR_MESSAGES } from "../constants/error-messages";
+import { IGroupRepository } from "../Interfaces/Repository/i-group-repositry";
 
 @injectable()
 export class CallLogRepository extends BaseRepository<ICallLog> implements ICallLogRepository {
   private _userRepository: IUserRepository;
+  private _groupRepo: IGroupRepository;
 
-  constructor(@inject('IUserRepository') userRepository : IUserRepository) {
+  constructor(
+    @inject('IUserRepository') userRepository : IUserRepository,
+    @inject("IGroupRepository") groupRepo: IGroupRepository,
+  ) {
     super(callModal);
     this._userRepository = userRepository;
+    this._groupRepo = groupRepo;
   }
 
   public createCallLog = async(data: Partial<ICallLog>): Promise<ICallLog> =>{
@@ -79,11 +85,6 @@ export class CallLogRepository extends BaseRepository<ICallLog> implements ICall
     try {
       logger.debug(`Finding call log by CallId: ${CallId}`);
       const callLog = await this.model.findOne({ CallId }).exec();
-      // if (callLog) {
-      //   logger.debug(`Found call log: ${callLog._id}, CallId: ${CallId}`);
-      // } else {
-      //   logger.debug(`No call log found for CallId: ${CallId}`);
-      // }
       return callLog;
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -112,6 +113,7 @@ export class CallLogRepository extends BaseRepository<ICallLog> implements ICall
         callLogs.map(async (log) => {
           let senderDetails = null;
           let recipientDetails: any[] = [];
+          let groupDetails = null;
 
           try {
             senderDetails = await this._userRepository.getUserById(
@@ -140,6 +142,14 @@ export class CallLogRepository extends BaseRepository<ICallLog> implements ICall
             logger.warn(`Error fetching recipient details: ${error}`);
           }
 
+          if (log.type === "group" && log.groupId) {
+            try {
+              groupDetails = await this._groupRepo.getGroupById(log.groupId);
+            } catch (error) {
+              logger.warn(`Failed to fetch group ${log.groupId}: ${error}`);
+            }
+          }
+
           return {
             ...log.toObject(),
             senderId: senderDetails
@@ -155,13 +165,16 @@ export class CallLogRepository extends BaseRepository<ICallLog> implements ICall
               name: user!.name,
               profilePic: user!.profilePic ?? null,
             })),
+            group: groupDetails
+              ? {
+                  _id: groupDetails._id,
+                  name: groupDetails.name,
+                  profilePic: groupDetails.profilePic ?? null,
+                }
+              : null,
           };
         })
       );
-
-      // logger.info(
-      //   `Retrieved ${populatedCallLogs.length} call logs for userId: ${userId}`
-      // );
       return populatedCallLogs;
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));

@@ -34,9 +34,9 @@ export class CallSocketHandler implements ICallSocketHandler{
     this._userRepo = userRepo;
     this._notificationService = notificationService;
     this._callLogRepo = callLogRepo;
-    logger.debug(
-      `CallSocketHandler initialized with callLogRepo: ${!!callLogRepo}`
-    );
+    // logger.debug(
+    //    `CallSocketHandler initialized with callLogRepo: ${!!callLogRepo}`
+    // );
     if (!callLogRepo) {
       logger.error("CallLogRepository is not initialized");
       throw new Error("CallLogRepository is required");
@@ -58,7 +58,7 @@ public async handleOffer(socket: Socket, data: CallData): Promise<void> {
     let contentType: "group" | "collaboration" | "userconnection";
 
     if (type === "group") {
-      // group call path (we are not implementing full group flow yet, but keep logic consistent)
+      // group call path 
       room = `group_${targetId}`;
       contentType = "group";
       const group = await this._groupRepo.getGroupById(targetId);

@@ -43,7 +43,7 @@ export class SocketService implements ISocketService {
     this._groupCallHandler.setIo(io);
     this._notificationHandler.initializeSocket(io);
     this._chatHandler.setIo(io);
-    logger.info("Socket.IO server initialized");
+    // logger.info("Socket.IO server initialized");
 
     SocketService.notificationEmitter.on("notification", (notification) => {
       this._notificationHandler.emitTaskNotification(notification);

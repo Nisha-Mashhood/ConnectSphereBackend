@@ -55,7 +55,7 @@ export class CategoryRepository
           .find()
           .sort({ createdAt: -1 })
           .exec();
-          logger.info(`Fetched ${JSON.stringify(categories)} categories`);
+          // logger.info(`Fetched ${JSON.stringify(categories)} categories`);
         return { categories, total: categories.length };
       }
 
@@ -88,7 +88,7 @@ export class CategoryRepository
       const result = await this.model.aggregate(pipeline).exec();
       const categories: ICategory[] = result[0]?.categories || [];
       const total: number = result[0]?.total[0]?.count || 0;
-      logger.info(`Fetched categories with total ${total}`);
+      // logger.info(`Fetched categories with total ${total}`);
       return { categories, total };
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -109,7 +109,7 @@ export class CategoryRepository
           .find()
           .sort({ createdAt: -1 })
           .exec();
-          logger.info(`Fetched ${JSON.stringify(categories)} categories`);
+          // logger.info(`Fetched ${JSON.stringify(categories)} categories`);
         return { categories };
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -133,7 +133,7 @@ export class CategoryRepository
           StatusCodes.NOT_FOUND
         );
       }
-      logger.info(`Category fetched: ${id} (${category.name})`);
+      // logger.info(`Category fetched: ${id} (${category.name})`);
       return category;
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));

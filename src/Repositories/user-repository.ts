@@ -49,7 +49,7 @@ export class UserRepository extends BaseRepository<IUser> implements IUserReposi
       logger.info(`No user found with email: ${email}`);
       return null;
     }
-      logger.info(`User fetched: ${user._id} (${email})`);
+      // logger.info(`User fetched: ${user._id} (${email})`);
       return user;
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -70,7 +70,7 @@ export class UserRepository extends BaseRepository<IUser> implements IUserReposi
         logger.warn(`User not found: ${id}`);
         throw new RepositoryError(`User not found with ID: ${id}`, StatusCodes.NOT_FOUND);
       }
-      logger.info(`User fetched: ${id} (${user.email})`);
+      // logger.info(`User fetched: ${id} (${user.email})`);
       return user;
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));

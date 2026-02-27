@@ -65,7 +65,7 @@ export class ChatSocketHandler {
       ) as string[];
 
       socket.join(rooms);
-      logger.info(`User ${userId} joined chats: ${rooms.join(", ")}`);
+      //logger.info(`User ${userId} joined chats: ${rooms.join(", ")}`);
     } catch (error: any) {
       logger.error(`Error joining chats for user ${userId}: ${error.message}`);
       socket.emit("error", { message: "Failed to join chats" });
@@ -76,41 +76,33 @@ export class ChatSocketHandler {
     socket.join(`user_${userId}`);
     const roomMembers =  this._io?.sockets.adapter.rooms.get(`user_${userId}`)?.size || 0;
     logger.info(`User ${userId} joined personal room: user_${userId}, socketId=${socket.id}, members=${roomMembers}` );
-    this._io?.emit("userOnline", { userId });
-    console.log(`[ONLINE] User ${userId} is online (broadcasted)`);
-    socket.emit("userOnline", { userId });
   }
 
   public handleEnsureUserRoom(socket: Socket, data: { userId: string }): void {
     const { userId } = data;
     socket.join(`user_${userId}`);
-    const roomMembers =
-      this._io?.sockets.adapter.rooms.get(`user_${userId}`)?.size || 0;
-    logger.info(
-      `Ensured user ${userId} joined room user_${userId}, socketId=${socket.id}, members=${roomMembers}`
-    );
+    const roomMembers =  this._io?.sockets.adapter.rooms.get(`user_${userId}`)?.size || 0;
+    logger.info(`Ensured user ${userId} joined room user_${userId}, socketId=${socket.id}, members=${roomMembers}`);
     this._io?.to(`user_${userId}`).emit("userRoomJoined", { userId });
   }
 
   public handleLeaveUserRoom(socket: Socket, userId: string): void {
     socket.leave(`user_${userId}`);
-    logger.info(
-      `User ${userId} left personal room: user_${userId}, socketId=${socket.id}`
-    );
+    // logger.info( `User ${userId} left personal room: user_${userId}, socketId=${socket.id}` );
   }
 
   public handleActiveChat(data: { userId: string; chatKey: string }): void {
     const { userId, chatKey } = data;
     this._activeChats.set(userId, chatKey);
-    logger.info(`User ${userId} set active chat: ${chatKey}`);
+    // logger.info(`User ${userId} set active chat: ${chatKey}`);
   }
 
   public async handleSendMessage(
     socket: Socket,
     message: Message
   ): Promise<void> {
-    logger.info("RAW MESSAGE RECEIVED:", JSON.stringify(message, null, 2));
-    logger.info("[DEBUG 1] handleSendMessage called");
+    //logger.info("RAW MESSAGE RECEIVED:", JSON.stringify(message, null, 2));
+    //logger.info("[DEBUG 1] handleSendMessage called");
 
     try {
       const {
@@ -126,7 +118,7 @@ export class ChatSocketHandler {
       } = message;
 
       if (!senderId || !targetId || !type || !content) {
-        logger.error("Missing required fields in message");
+        //logger.error("Missing required fields in message");
         socket.emit("error", { message: "Missing required fields" });
         return;
       }
@@ -141,9 +133,9 @@ export class ChatSocketHandler {
       if (contentType === "text") {
         if (type === "group") {
           const group = await this._groupRepo.getGroupById(targetId);
-          logger.info(`Group details : ${group}`);
+          //logger.info(`Group details : ${group}`);
           if (!group) {
-            logger.error("Invalid group ID:", targetId);
+            //logger.error("Invalid group ID:", targetId);
             socket.emit("error", { message: "Invalid group ID" });
             return;
           }
@@ -151,9 +143,9 @@ export class ChatSocketHandler {
             targetId,
             senderId
           );
-          logger.info(`isMember : ${isMember}`);
+          //logger.info(`isMember : ${isMember}`);
           if (!isMember) {
-            logger.error("Sender not in group");
+            //logger.error("Sender not in group");
             socket.emit("error", { message: "Not a group member" });
             return;
           }
@@ -174,7 +166,7 @@ export class ChatSocketHandler {
             targetId
           );
           if (!contact || !contact._id) {
-            logger.error("Contact not found for users:", senderId, targetId);
+            //logger.error("Contact not found for users:", senderId, targetId);
             socket.emit("error", { message: "Invalid contact" });
             return;
           }
@@ -225,22 +217,16 @@ export class ChatSocketHandler {
       }
 
       if (!savedMessage) {
-        logger.error("Failed to save message");
+        //logger.error("Failed to save message");
         socket.emit("error", { message: "Failed to save message" });
         return;
       }
 
-      logger.info(`[DEBUG 2] Message saved successfully, ${savedMessage}`);
-      logger.info(`Message Id :",${savedMessage._id.toString()}`);
-      logger.info(
-        `collaboartionId : ${savedMessage.collaborationId?.toString() || null}`
-      );
-      logger.info(
-        `userConnectionId : ${
-          savedMessage.userConnectionId?.toString() || null
-        }`
-      );
-      logger.info(`GroupId : ${savedMessage.groupId?.toString() || null}`);
+      //logger.info(`[DEBUG 2] Message saved successfully, ${savedMessage}`);
+      //logger.info(`Message Id :",${savedMessage._id.toString()}`);
+      //logger.info( `collaboartionId : ${savedMessage.collaborationId?.toString() || null}`);
+      logger.info( `userConnectionId : ${ savedMessage.userConnectionId?.toString() || null }` );
+      //logger.info(`GroupId : ${savedMessage.groupId?.toString() || null}`);
 
       // ====================== BUILD messageData (common for both types) ======================
     const messageData = {
@@ -324,10 +310,9 @@ export class ChatSocketHandler {
       }
 
       if (!chatKey || recipientIds.length === 0) {
-        logger.warn("No valid chatKey or recipients → skipping notifications"
-        );
+        //logger.warn("No valid chatKey or recipients → skipping notifications" );
       } else if (this._io) {
-        logger.info("Starting notification + contactsUpdated for", recipientIds.length, "users" );
+        //logger.info("Starting notification + contactsUpdated for", recipientIds.length, "users" );
 
         // === SEND NOTIFICATIONS ===
         for (const recipientId of recipientIds) {
@@ -373,11 +358,7 @@ export class ChatSocketHandler {
       socket.broadcast.to(room).emit("receiveMessage", messageData);
       socket.emit("messageSaved", messageData);
     } catch (error: any) {
-      logger.error(
-        "[FATAL] handleSendMessage crashed:",
-        error.message,
-        error.stack
-      );
+      logger.error( "[FATAL] handleSendMessage crashed:", error.message, error.stack);
       socket.emit("error", { message: "Failed to send message" });
     }
   }
@@ -392,9 +373,7 @@ export class ChatSocketHandler {
       room = `chat_${ids[0]}_${ids[1]}`;
     }
     socket.broadcast.to(room).emit("typing", { userId, chatKey });
-    logger.info(
-      `Broadcasting typing to room ${room}: userId=${userId}, chatKey=${chatKey}`
-    );
+    logger.info(`Broadcasting typing to room ${room}: userId=${userId}, chatKey=${chatKey}` );
   }
 
   public handleStopTyping(socket: Socket, data: TypingData): void {
@@ -407,9 +386,7 @@ export class ChatSocketHandler {
       room = `chat_${ids[0]}_${ids[1]}`;
     }
     socket.to(room).emit("stopTyping", { userId, chatKey });
-    logger.info(
-      `Broadcasting stopTyping to room ${room}: userId=${userId}, chatKey=${chatKey}`
-    );
+    //logger.info( `Broadcasting stopTyping to room ${room}: userId=${userId}, chatKey=${chatKey}` );
   }
 
   public async handleMarkAsRead(
@@ -515,7 +492,7 @@ export class ChatSocketHandler {
       this._io?.to(`user_${otherId}`).emit("messagesRead", { chatKey, userId, messageIds: updatedMessages });
     });
 
-    logger.info(`Marked messages as read for user ${userId} in chat ${chatKey}`);
+    //logger.info(`Marked messages as read for user ${userId} in chat ${chatKey}`);
   } catch (error: any) {
     logger.error(`Error marking messages as read: ${error.message}`);
     socket.emit("error", { message: "Failed to mark messages as read" });
@@ -526,7 +503,7 @@ export class ChatSocketHandler {
   public handleLeaveChat(userId: string): void {
     try {
       this._activeChats.delete(userId);
-      logger.info(`User ${userId} left all chats — activeChat cleared`);
+      //logger.info(`User ${userId} left all chats — activeChat cleared`);
     } catch (err: any) {
       logger.error(`Failed to handle leaveChat for ${userId}: ${err.message}`);
     }

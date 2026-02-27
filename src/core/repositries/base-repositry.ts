@@ -36,7 +36,7 @@ export abstract class BaseRepository<T extends Document> implements IBaseReposit
   findById = async (id?: string): Promise<T | null> => {
     try {
       const result = await this.model.findById(id).exec();
-      logger.debug(`Found entity in ${this.model.modelName} by ID: ${id}`);
+      // logger.debug(`Found entity in ${this.model.modelName} by ID: ${id}`);
       return result;
     } catch (error: any) {
       logger.error(`Error finding entity in ${this.model.modelName} by ID ${id}: ${error.message}`);
@@ -48,7 +48,7 @@ export abstract class BaseRepository<T extends Document> implements IBaseReposit
   findOne = async (query: FilterQuery<T>): Promise<T | null> => {
     try {
       const result = await this.model.findOne(query).exec();
-      logger.debug(`Found entity in ${this.model.modelName} with query: ${JSON.stringify(query)}`);
+      // logger.debug(`Found entity in ${this.model.modelName} with query: ${JSON.stringify(query)}`);
       return result;
     } catch (error: any) {
       logger.error(`Error finding entity in ${this.model.modelName} with query ${JSON.stringify(query)}: ${error.message}`);

@@ -316,7 +316,7 @@ export class ChatRepository extends BaseRepository<IChatMessage> implements ICha
 
   public async findLatestMessageByGroupId(groupId: string): Promise<IChatMessage | null> {
     try {
-      logger.debug(`Finding latest message for groupId: ${groupId}`);
+      // logger.debug(`Finding latest message for groupId: ${groupId}`);
       const message = await this.model
         .findOne({ groupId: this.toObjectId(groupId) })
         .sort({ timestamp: -1 })
@@ -337,7 +337,7 @@ export class ChatRepository extends BaseRepository<IChatMessage> implements ICha
 
   public async findLatestMessageByCollaborationId(collaborationId: string): Promise<IChatMessage | null> {
     try {
-      logger.debug(`Finding latest message for collaborationId: ${collaborationId}`);
+      // logger.debug(`Finding latest message for collaborationId: ${collaborationId}`);
       const message = await this.model
         .findOne({ collaborationId: this.toObjectId(collaborationId) })
         .sort({ timestamp: -1 })
@@ -358,7 +358,7 @@ export class ChatRepository extends BaseRepository<IChatMessage> implements ICha
 
   public async findLatestMessageByUserConnectionId(userConnectionId: string): Promise<IChatMessage | null> {
     try {
-      logger.debug(`Finding latest message for userConnectionId: ${userConnectionId}`);
+      // logger.debug(`Finding latest message for userConnectionId: ${userConnectionId}`);
       const message = await this.model
         .findOne({ userConnectionId: this.toObjectId(userConnectionId) })
         .sort({ timestamp: -1 })

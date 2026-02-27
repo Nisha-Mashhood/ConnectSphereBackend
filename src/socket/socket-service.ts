@@ -63,30 +63,43 @@ export class SocketService implements ISocketService {
     );
 
     socket.join(`user_${userId}`);
-    logger.info(
-      `User ${userId} joined personal room: user_${userId}, socketId=${socket.id}`,
-    );
+    logger.info( `User ${userId} joined personal room: user_${userId}, socketId=${socket.id}` );
+    console.log("Total sockets:", this._io?.sockets.sockets.size);
 
+    //Fired when a user ENTERS chat screen
     socket.on("chat:online", ({ userId }) => {
+      // console.log("chat:online received from:", userId);
+
+      // Mark this socket as "user is actively inside chat UI"
       socket.data.inChat = true;
       logger.info(`[PRESENCE] User ${userId} entered chat`);
-      const rooms = Array.from(socket.rooms).filter(
-        (r) => r.startsWith("chat_") || r.startsWith("group_"),
-      );
-      rooms.forEach((room) => {
-        socket.to(room).emit("userOnline", { userId });
+
+      // Build a list of users who are ALREADY inside chat
+      const onlineUsers: string[] = [];
+      this._io?.sockets.sockets.forEach((s) => {
+        // Only include sockets that are currently inside chat
+        // Exclude the current user
+        if (s.data.inChat && s.data.userId ) {
+          onlineUsers.push(s.data.userId);
+        }
       });
+      // Broadcast full online users to everyone
+      this._io?.emit("chat:onlineUsers", onlineUsers);
     });
 
     socket.on("chat:offline", ({ userId }) => {
       socket.data.inChat = false;
       logger.info(`[PRESENCE] User ${userId} left chat`);
-      const rooms = Array.from(socket.rooms).filter(
-        (r) => r.startsWith("chat_") || r.startsWith("group_"),
-      );
-      rooms.forEach((room) => {
-        socket.to(room).emit("userOffline", { userId });
+      //Rebuild full online list
+      const onlineUsers: string[] = [];
+      this._io?.sockets.sockets.forEach((s) => {
+        if (s.data.inChat && s.data.userId) {
+          onlineUsers.push(s.data.userId);
+        }
       });
+
+      // Broadcast full updated online users
+      this._io?.emit("chat:onlineUsers", onlineUsers);
     });
 
     // Chat-related events
@@ -136,9 +149,7 @@ export class SocketService implements ISocketService {
     );
 
     // Notification events
-    socket.on(
-      "notification.read",
-      (data: { notificationId: string; userId: string }) =>
+    socket.on( "notification.read", (data: { notificationId: string; userId: string }) =>
         this._notificationHandler.handleNotificationRead(socket, data),
     );
 
@@ -169,15 +180,17 @@ export class SocketService implements ISocketService {
 
   public handleDisconnect(socket: Socket): void {
     const userId = socket.data.userId;
-    if (socket.data.inChat) {
-      const rooms = Array.from(socket.rooms).filter(
-        (r) => r.startsWith("chat_") || r.startsWith("group_"),
-      );
-      rooms.forEach((room) => {
-        socket.to(room).emit("userOffline", { userId });
+    // Mark user as not in chat
+      socket.data.inChat = false;
+      // full online list
+      const onlineUsers: string[] = [];
+      this._io?.sockets.sockets.forEach((s) => {
+        if (s.data.inChat && s.data.userId) {
+          onlineUsers.push(s.data.userId);
+        }
       });
-      logger.info(`[PRESENCE] User ${userId} went OFFLINE due to disconnect`);
-    }
-    logger.info(`User disconnected: socketId=${socket.id}, userId=${userId}`);
+      //Broadcast 
+      this._io?.emit("chat:onlineUsers", onlineUsers);
+      logger.info(`[PRESENCE] User ${userId} disconnected`);
   }
 }

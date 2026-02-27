@@ -33,7 +33,7 @@ export class ChatController extends BaseController implements IChatController{
         throw new HttpError(ERROR_MESSAGES.INVALID_LIMIT_VALUE, StatusCodes.BAD_REQUEST);
       }
 
-      logger.debug(`Fetching chat messages with contactId: ${contactId}, groupId: ${groupId}, page: ${parsedPage}, limit: ${parsedLimit}`);
+      // logger.debug(`Fetching chat messages with contactId: ${contactId}, groupId: ${groupId}, page: ${parsedPage}, limit: ${parsedLimit}`);
 
       const result = await this._chatService.getChatMessages(contactId as string | undefined, groupId as string | undefined, parsedPage, parsedLimit);
 
@@ -43,7 +43,7 @@ export class ChatController extends BaseController implements IChatController{
           { messages: [], total: 0, page: parsedPage, limit: parsedLimit },
           contactId ? CHAT_MESSAGES.NO_MESSAGES_FOUND_FOR_CONTACT : CHAT_MESSAGES.NO_MESSAGES_FOUND_FOR_GROUP
         );
-        logger.info(`No messages found for contactId: ${contactId || "none"}, groupId: ${groupId || "none"}`);
+        // logger.info(`No messages found for contactId: ${contactId || "none"}, groupId: ${groupId || "none"}`);
         return;
       }
 
@@ -52,7 +52,7 @@ export class ChatController extends BaseController implements IChatController{
         { messages: result.messages, total: result.total, page: parsedPage, limit: parsedLimit },
         CHAT_MESSAGES.MESSAGES_RETRIEVED
       );
-      logger.info(`Fetched ${result.messages.length} messages, total: ${result.total}`);
+      // logger.info(`Fetched ${result.messages.length} messages, total: ${result.total}`);
     } catch (error: any) {
       logger.error(`Error fetching chat messages: ${error.message}`);
       next(error);

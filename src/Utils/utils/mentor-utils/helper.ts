@@ -1,19 +1,55 @@
-  const toMinutes = (time: string): number => {
-    const [hourMin, modifier] = time.trim().split(" ");
-    let [hours, minutes] = hourMin.split(":").map(Number);
+export const toMinutes = (time: string): number => {
+  if (!time || typeof time !== "string") {
+    throw new Error("Invalid time format");
+  }
 
-    if (modifier.toLowerCase() === "pm" && hours !== 12) hours += 12;
-    if (modifier.toLowerCase() === "am" && hours === 12) hours = 0;
+  const [hourPart, modifier] = time.trim().split(" ");
+  const [hours, minutes] = hourPart.split(":").map(Number);
 
-    return hours * 60 + minutes;
-  };
+  let finalHours = hours;
 
-  export const isTimeWithinRange = (selected: string, range: string): boolean => {
-    const [start, end] = range.split("-").map(t => t.trim());
+  if (modifier === "PM" && hours !== 12) {
+    finalHours += 12;
+  }
 
-    const selectedMin = toMinutes(selected);
-    const startMin = toMinutes(start);
-    const endMin = toMinutes(end);
+  if (modifier === "AM" && hours === 12) {
+    finalHours = 0;
+  }
 
-    return selectedMin >= startMin && selectedMin < endMin;
-  };
+  return finalHours * 60 + minutes;
+};
+
+export const isTimeWithinRange = (
+  selectedTime: string,
+  range: string,
+  defaultDurationMinutes = 60,
+): boolean => {
+  if (!range || typeof range !== "string") {
+    return false;
+  }
+
+  let start: string;
+  let end: string;
+
+  if (range.includes("-")) {
+    [start, end] = range.split("-").map((t) => t.trim());
+  } else {
+    start = range.trim();
+
+    const startMinutes = toMinutes(start);
+    const endMinutes = startMinutes + defaultDurationMinutes;
+
+    return (
+      toMinutes(selectedTime) >= startMinutes &&
+      toMinutes(selectedTime) < endMinutes
+    );
+  }
+
+  if (!start || !end) return false;
+
+  const selectedMinutes = toMinutes(selectedTime);
+  const startMinutes = toMinutes(start);
+  const endMinutes = toMinutes(end);
+
+  return selectedMinutes >= startMinutes && selectedMinutes < endMinutes;
+};

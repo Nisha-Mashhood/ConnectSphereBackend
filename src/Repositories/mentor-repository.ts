@@ -485,10 +485,11 @@ export class MentorRepository extends BaseRepository<IMentor> implements IMentor
           const daySlots = availableSlots.find(
             (slot) => slot.day.trim().toLowerCase() === normalizedDay
           );
+          const defaultDuration = mentor.timePeriod ?? 60;
 
           if (!daySlots?.timeSlots?.length) return false;
           const isAvailable = daySlots.timeSlots.some(
-            (range: string) => isTimeWithinRange(normalizedTime, range)
+            (range: string) => isTimeWithinRange(normalizedTime, range, defaultDuration)
           );
 
           logger.info( `Slot ${isAvailable ? "AVAILABLE" : "NOT AVAILABLE"} for mentor ${mentorId}` );

@@ -2,19 +2,6 @@
 
 **A Scalable Mentorship & Collaboration Platform**
 
-![Image]()
-
-![Image]()
-
-![Image]()
-
-![Image]()
-
-![Status]()
-![Tech]()
-![License]()
-![Deployment]()
-
 ---
 
 ## 📌 Project Description

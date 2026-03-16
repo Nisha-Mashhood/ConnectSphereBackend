@@ -76,6 +76,12 @@ export class GroupService implements IGroupService {
         );
       }
 
+      if (groupData.price > 0 && groupData.price < 50) {
+        throw new ServiceError("Minimum Stripe payment amount is ₹50",
+          StatusCodes.BAD_REQUEST
+        );
+      }
+
       if (
         groupData.members &&
         groupData.members.some((id) => !Types.ObjectId.isValid(id))

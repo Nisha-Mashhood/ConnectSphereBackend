@@ -2,19 +2,6 @@
 
 **A Scalable Mentorship & Collaboration Platform**
 
-![Image]()
-
-![Image]()
-
-![Image]()
-
-![Image]()
-
-![Status]()
-![Tech]()
-![License]()
-![Deployment]()
-
 ---
 
 ## 📌 Project Description
@@ -156,7 +143,7 @@ npm run dev
 | POST   | `/api/payment/stripe`     | Payment processing  |
 | GET    | `/api/chat/messages`      | Fetch chat messages |
 
-> Detailed API documentation available via Postman collection.
+> Detailed API documentation available via Postman collection.[https://documenter.getpostman.com/view/33210699/2sAYBYfACF]
 
 ---
 
@@ -248,19 +235,6 @@ Frontend and backend are deployed **independently** for scalability.
 
 ---
 
-## 🎨 Visual Elements
-
-![Image]()
-
-![Image]()
-
-![Image]()
-
-![Image]()
-
-> Screenshots and demo GIFs .
-
----
 
 ## 👩‍💻 Author
 

@@ -44,15 +44,13 @@ const startServer = async () => {
   app.use(express.json());
   app.use(cookieParser());
   const allowedOrigins = [
-  "https://www.connectsphere.digital",
-  "https://connectsphere.digital",
-  "http://localhost:8089",
-];
-
-app.use(
-  cors({
+    "https://www.connectsphere.digital",
+    "https://connectsphere.digital",
+    "http://localhost:8089",
+  ];
+  
+  const corsOptions: cors.CorsOptions = {
     origin: (origin, callback) => {
-      // Allow requests without an Origin header, such as server-to-server calls.
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
@@ -62,8 +60,8 @@ app.use(
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+  };
+  app.use(cors(corsOptions));
 
 //   app.options("*", cors());
 

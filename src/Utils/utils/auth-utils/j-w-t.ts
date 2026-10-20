@@ -117,9 +117,10 @@ export class JWTServiceClass implements IJWTService{
   }
 
   public clearCookies = (res: Response): void => {
+    const isProduction = config.node_env === 'production';
     try {
-      res.clearCookie('accessToken', { httpOnly: true, sameSite: 'strict' });
-      res.clearCookie('refreshToken', { httpOnly: true, sameSite: 'strict' });
+      res.clearCookie('accessToken', { httpOnly: true, sameSite: isProduction ? 'none' : 'lax' });
+      res.clearCookie('refreshToken', { httpOnly: true, sameSite: isProduction ? 'none' : 'lax' });
       // logger.debug('Cleared accessToken and refreshToken cookies');
     } catch (error: any) {
       // logger.error(`Failed to clear cookies: ${error.message}`);

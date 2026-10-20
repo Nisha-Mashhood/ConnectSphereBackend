@@ -13,3 +13,6 @@ uploads/
 
 #log File
 logs/
+
+#/typeScript Build Cache
+*.tsbuildinfo

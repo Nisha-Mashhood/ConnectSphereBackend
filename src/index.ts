@@ -43,17 +43,34 @@ const startServer = async () => {
   // Middleware
   app.use(express.json());
   app.use(cookieParser());
-  app.use(cors({
-    origin: config.frontendurl || "http://localhost:8089",
+  const allowedOrigins = [
+  "https://www.connectsphere.digital",
+  "https://connectsphere.digital",
+  "http://localhost:8089",
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests without an Origin header, such as server-to-server calls.
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS blocked for origin: ${origin}`));
+      }
+    },
     credentials: true,
-  }));
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-  app.options("*", cors());
+//   app.options("*", cors());
 
-  app.use((_req, res, next) => {
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
-});
+//   app.use((_req, res, next) => {
+//   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//   next();
+// });
 
 
   // Routes
@@ -86,7 +103,7 @@ const startServer = async () => {
   // Initialize Socket.IO
   const io = new Server(server, {
     cors: {
-      origin: config.frontendurl || "http://localhost:8089",
+      origin: allowedOrigins,
       methods: ["GET", "POST"],
       credentials: true,
     },

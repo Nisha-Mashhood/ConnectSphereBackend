@@ -29,7 +29,7 @@
     "moduleResolution": "bundler",                          /* Resolve modules in Node.js style. */
     "allowSyntheticDefaultImports": true,                /* Allow default imports for modules without a default export. */
     "typeRoots": ["./node_modules/@types"], 
-    "types": ["node"],             /* Specify the type definition root folder. */
+    // "types": ["node"],             /* Specify the type definition root folder. */
     // "baseUrl": "./",  
     "paths": {
       "src/*": ["./src/*"],

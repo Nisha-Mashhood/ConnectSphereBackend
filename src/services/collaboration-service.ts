@@ -52,11 +52,13 @@ export class CollaborationService implements ICollaborationService {
   ): Promise<IMentorRequestDTO | null> => {
     try {
       logger.debug(`Creating temporary request`);
+      //find mentor with  given Id
       const mentor = await this._mentorRepository.getMentorById(data.mentorId);
         if (!mentor) {
           throw new ServiceError("Mentor not found", StatusCodes.NOT_FOUND);
         }
   
+        //day
         const { day } = data.selectedSlot;
         const rawSlots = data.selectedSlot.timeSlots;
 
@@ -68,31 +70,37 @@ export class CollaborationService implements ICollaborationService {
         throw new ServiceError("Invalid slot selection", StatusCodes.BAD_REQUEST);
       }
 
+        //timeslot
       const selectedTime = timeSlots[0];
 
+      //chcek slot Is slot available(is the slot same as that given in mentor profile)
       const isSlotAvailable = await this._mentorRepository.isSlotAvailable( data.mentorId, day, selectedTime );
       console.log("Slot Available :",isSlotAvailable);
       if (!isSlotAvailable) {
         throw new ServiceError( "Selected slot not available for this mentor", StatusCodes.BAD_REQUEST );
       }
 
+      //locked slot(mentor)
       const mentorConflict = await this.hasMentorSlotConflict( data.mentorId, day, selectedTime );
       console.log("mentorConflict :",mentorConflict);
       if (mentorConflict) {
         throw new ServiceError("Mentor already booked for this slot", StatusCodes.CONFLICT);
       }
 
+      //locked slot(user)
       const userConflict = await this.hasUserCollabSlotConflict( userId, day, selectedTime );
       console.log("userConflict :",userConflict);
       if (userConflict) {
         throw new ServiceError("You already have a session at this time", StatusCodes.CONFLICT );
       }
 
+      //get price from fetched mentor data(not the frontend data)
       const price = mentor.price;
       if (!price || price <= 0) {
         throw new ServiceError( "Mentor price not set", StatusCodes.INTERNAL_SERVER_ERROR );
       }
       const timePeriod = mentor.timePeriod ?? 1;
+      //create request data
       const requestData: Partial<IMentorRequest> = {
         mentorId: new Types.ObjectId(data.mentorId),
         userId: new Types.ObjectId(userId),
@@ -108,6 +116,7 @@ export class CollaborationService implements ICollaborationService {
 
       const request = await this._collabRepository.createTemporaryRequest(requestData);
       logger.info(`Temporary request created: ${request._id}`);
+      //return DTO
       return toMentorRequestDTO(request);
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));
@@ -120,6 +129,7 @@ export class CollaborationService implements ICollaborationService {
     }
   };
 
+  //get Requset document with this mentorId
   public getMentorRequests = async (
     mentorId: string
   ): Promise<IMentorRequestDTO[]> => {
@@ -153,6 +163,7 @@ export class CollaborationService implements ICollaborationService {
     }
   };
 
+  //Private function when mentor has slot booked by other user
   private async hasMentorSlotConflict(
     mentorId: string,
     day: string,
@@ -174,6 +185,7 @@ export class CollaborationService implements ICollaborationService {
     });
   }
 
+  //private function when user has booked this slot for other collaborations
   private async hasUserCollabSlotConflict(
     userId: string,
     day: string,
@@ -202,6 +214,7 @@ export class CollaborationService implements ICollaborationService {
     });
   }
 
+  //Accept the request
   public acceptRequest = async (
     requestId: string,
     userId: string,
@@ -304,6 +317,7 @@ export class CollaborationService implements ICollaborationService {
         );
       }
 
+      //send email
       const userSubject = "Mentor Request Acceptance Notice";
       const userText = `Dear ${userName},\n\nYour mentor request to ${mentorName} has been accepted. Please proceed with the payment to start the collaboration.\n\nBest regards,\nConnectSphere Team`;
       await sendEmail(userEmail, userSubject, userText);
@@ -314,6 +328,7 @@ export class CollaborationService implements ICollaborationService {
       await sendEmail(mentorEmail, mentorSubject, mentorText);
       logger.info(`Acceptance email sent to mentor: ${mentorEmail}`);
 
+      //send notifications
       await this._notificationService.sendNotification(
         user._id.toString(),
         "collaboration_status",
@@ -354,6 +369,7 @@ export class CollaborationService implements ICollaborationService {
     }
   };
 
+  //reject the request
   public rejectRequest = async (
     requestId: string,
     userId: string
@@ -422,6 +438,7 @@ export class CollaborationService implements ICollaborationService {
         );
       }
 
+      //send email
       const userSubject = "Mentor Request Rejection Notice";
       const userText = `Dear ${userName},\n\nYour mentor request to ${mentorName} has been rejected.\nPlease contact support for more details.\n\nBest regards,\nConnectSphere Team`;
       await sendEmail(userEmail, userSubject, userText);
@@ -432,6 +449,7 @@ export class CollaborationService implements ICollaborationService {
       await sendEmail(mentorEmail, mentorSubject, mentorText);
       logger.info(`Rejection email sent to mentor: ${mentorEmail}`);
 
+      //send notification
       await this._notificationService.sendNotification(
         user._id.toString(),
         "collaboration_status",
@@ -458,6 +476,7 @@ export class CollaborationService implements ICollaborationService {
         `Sent collaboration_status notification to mentor ${mentorUser._id}`
       );
 
+      //return dto
       return toMentorRequestDTO(updatedRequest);
     } catch (error: unknown) {
       const err = error instanceof Error ? error : new Error(String(error));

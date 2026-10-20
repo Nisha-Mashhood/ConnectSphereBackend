@@ -86,7 +86,6 @@ export class CollaborationRepository extends BaseRepository<ICollaboration> impl
           populate: { path: "userId", select: "_id name email profilePic" },
         })
         .populate("userId", "_id name email profilePic")
-        .lean()
         .exec();
       logger.info(`Fetched ${requests.length} mentor requests for mentorId: ${mentorId}`);
       return requests;

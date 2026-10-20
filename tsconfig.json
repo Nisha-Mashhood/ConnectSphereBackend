@@ -26,23 +26,23 @@
     "inlineSources": true,                               /* Include original source code in source maps. */
 
     /* Advanced Options */
-    "moduleResolution": "Node",                          /* Resolve modules in Node.js style. */
+    "moduleResolution": "node16",                          /* Resolve modules in Node.js style. */
     "allowSyntheticDefaultImports": true,                /* Allow default imports for modules without a default export. */
     "typeRoots": ["./node_modules/@types"], 
     "types": ["node"],             /* Specify the type definition root folder. */
-    "baseUrl": "./",  
+    // "baseUrl": "./",  
     "paths": {
       "src/*": ["./src/*"],
-      "@Utils/*": ["Utils/*"],
-      "@Controllers/*": ["Controllers/*"],
-      "@Services/*": ["Services/*"],
-      "@Repositories/*": ["Repositories/*"],
-      "@Routes/*": ["Routes/*"],
-      "@config/*": ["config/*"],
-      "@middlewares/*": ["middlewares/*"],
-      "@Core/*": ["Core/*"],
-      "@Interfaces/*": ["Interfaces/*"],
-      "@Models/*": ["Models/*"],
+      "@Utils/*": ["./src/Utils/*"],
+      "@Controllers/*": ["./src/Controllers/*"],
+      "@Services/*": ["./src/Services/*"],
+      "@Repositories/*": ["./src/Repositories/*"],
+      "@Routes/*": ["./src/Routes/*"],
+      "@config/*": ["./src/config/*"],
+      "@middlewares/*": ["./src/middlewares/*"],
+      "@Core/*": ["./src/Core/*"],
+      "@Interfaces/*": ["./src/Interfaces/*"],
+      "@Models/*": ["./src/Models/*"],
     },                                   /* Base directory for module resolution. */
 
     /* Optional Linting Improvements */
